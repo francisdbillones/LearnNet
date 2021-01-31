@@ -129,4 +129,4 @@ dmypy.json
 .pyre/
 
 # flask env variables
-.sh
+*.sh
