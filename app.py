@@ -19,19 +19,25 @@ def after_request(response):
 
 @app.route("/")
 def index():
-    if session.get("userID"):
-        return render_template("index.html")
-    else:
-        return render_template("greet.html")
+    return render_template("index.html")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         pass
     else:
-        # if user was redirected, pass parameter to login.html to tell user that login was required for their previous action
-        if session.get("redirectedToLogin"):
-            return render_template("login.html", redirected=session.get("redirectedToLogin"))
-        else:
-            return render_template("login.html")
+        # pass parameter redirected to login.html to display "login required" message then clear cookie
+        redirected = session.get("redirectedToLogin")
+        del session["redirectedToLogin"]
+        return render_template("login.html", redirected=redirected)
+
+@app.route("/browse", methods=["GET", "POST"])
+def browse():
+    pass
+
+@app.route("/search", methods=["GET", "POST"])
+def search():
+    pass
+
+
         

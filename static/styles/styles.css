@@ -1,0 +1,11 @@
+body,
+html {
+    padding: 0;
+    margin: 0;
+    font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif
+}
+
+#call-to-action {
+    text-align: center;
+    margin: 5%;
+}
