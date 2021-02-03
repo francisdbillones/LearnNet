@@ -1,15 +1,21 @@
-{% extends "layout.html" %} {% block title %} Welcome to OpenEd {% endblock %} {% block main %} {% if not session.get("userID") %}
-<div id="call-to-action">
-    <h1 class="cover-heading">Free education for all.</h1>
-    <p class="lead">OpenEd is a platform to distribute educational resources, tools, and documents. Access material from universities and school all around the world.</p>
-    <p class="lead">
-        <a href="#" class="btn btn-lg btn-secondary">Learn more</a>
+{% extends 'layout.html' %} 
+{% block title %} Welcome to OpenEd {% endblock %}
+
+{% block main %} 
+{% if not session.get('userID') %}
+<div id='call-to-action'>
+    {% if not session.get('userID') %}
+    <h1 class='cover-heading'>Free education for all.</h1>
+    <p class='lead'>OpenEd is a platform to distribute educational resources, tools, and documents. Access material from universities and schools all around the world.</p>
+    <p class='lead'>
+        <a href='#' class='btn btn-lg btn-secondary'>Learn more</a>
     </p>
+    {% endif %}
 </div>
 {% endif %}
-<form action="/search" method="post" onsubmit="return validateSearch();">
-    <div class="input-group rounded">
-        <input name="search" type="search" class="form-control rounded" placeholder="Search our index" />
+<form action='/search' method='post' required>
+    <div class='input-group rounded'>
+        <input name='search' type='search' class='form-control rounded' placeholder='Search our index' autofocus autocomplete='off' required />
     </div>
 </form>
 {% endblock %}

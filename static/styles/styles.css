@@ -9,3 +9,43 @@ html {
     text-align: center;
     margin: 5%;
 }
+
+
+/* navbar effects to be dramatic ;) */
+
+nav .navbar-brand {
+    /* size for brand */
+    font-size: xx-large;
+}
+
+.nav-link {
+    transition: 0.3s;
+}
+
+.nav-link:hover {
+    font-weight: bold;
+}
+
+main {
+    /* Scroll horizontally as needed */
+    overflow-x: auto;
+}
+
+main img {
+    /* Constrain images on small screens */
+    max-width: 100%;
+}
+
+
+/* don't show red box when user doesn't type anything in search box */
+
+input[name='search']:invalid {
+    box-shadow: none
+}
+
+
+/* links should not have underlines, just a personal styling choice */
+
+a {
+    text-decoration: none;
+}
