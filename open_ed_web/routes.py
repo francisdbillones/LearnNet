@@ -5,7 +5,7 @@ from open_ed_web.forms import *
 from open_ed_web.models import User, Content
 from open_ed_web import app, db, bcrypt, session
 
-from open_ed_web.helpers import save_picture
+from open_ed_web.helpers import save_profile_picture, delete_profile_picture
 
 import os
 import secrets
@@ -75,7 +75,8 @@ def account():
         current_user.email = form.email.data
         
         if form.pfp_file.data:
-            current_user.pfp_file = save_picture(form.pfp_file.data)
+            delete_profile_picture(current_user.pfp_file)
+            current_user.pfp_file = save_profile_picture(form.pfp_file.data)
         
         db.session.commit()
         flash('Your account has been updated!', 'success')
