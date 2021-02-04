@@ -6,4 +6,4 @@ flask_user
 flask_wtf
 wtforms
 email_validator
-flask-bycrpt
+flask-bcrypt
