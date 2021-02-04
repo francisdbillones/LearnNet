@@ -1,8 +1,14 @@
 from flask import render_template, redirect, url_for, flash, request, jsonify
+from flask_login import login_user, logout_user, login_required, current_user
+
 from open_ed_web.forms import *
 from open_ed_web.models import User, Content
 from open_ed_web import app, db, bcrypt, session
-from flask_login import login_user, logout_user, login_required, current_user
+
+from open_ed_web.helpers import save_picture
+
+import os
+import secrets
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -62,8 +68,26 @@ def signout():
 @app.route('/account', methods=['GET', 'POST'])
 @login_required
 def account():
+    form = UpdateAccountForm()
+    
+    if form.validate_on_submit():
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        
+        if form.pfp_file.data:
+            current_user.pfp_file = save_picture(form.pfp_file.data)
+        
+        db.session.commit()
+        flash('Your account has been updated!', 'success')
+        return redirect(url_for('account'))
+    
+    elif request.method == 'GET':
+        # pre-fill fields
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+        
     profile_image = url_for('static', filename=f'images/{ current_user.pfp_file }')
-    return render_template('account.html', profile_image=profile_image)
+    return render_template('account.html', profile_image=profile_image, form=form)
 
 @app.route('/browse', methods=['GET', 'POST'])
 def browse():
