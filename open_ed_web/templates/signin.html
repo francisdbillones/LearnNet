@@ -1,5 +1,7 @@
 {% extends 'layout.html' %} 
 
+{% block head %}<script src='{{ url_for("static", filename="scripts/greeter.js") }}'></script>{% endblock %}
+
 {% block title %} Sign up {% endblock %} 
 
 {% block main %}
@@ -7,7 +9,7 @@
     <form action='' method='POST'>
         {{ form.hidden_tag() }}
         <fieldset class='form-group'>
-            <legend class='border-bottom mb-4'>Sign in</legend>
+            <legend class='border-bottom mb-4'>Hello, user. Please sign in.</legend>
 
             <div class='form-group'>
                 {{ form.email.label(class='form=control-label') }} 

@@ -1,8 +1,8 @@
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, jsonify
 from open_ed_web.forms import *
 from open_ed_web.models import User, Content
 from open_ed_web import app, db, bcrypt, session
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user, login_required, current_user
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -62,7 +62,8 @@ def signout():
 @app.route('/account', methods=['GET', 'POST'])
 @login_required
 def account():
-    return render_template('account.html')
+    profile_image = url_for('static', filename=f'images/{ current_user.pfp_file }')
+    return render_template('account.html', profile_image=profile_image)
 
 @app.route('/browse', methods=['GET', 'POST'])
 def browse():
@@ -78,6 +79,13 @@ def upload():
     
     flash('That page does not exist yet, sorry.', 'info')
     return redirect(url_for('index'))
+
+@app.route('/getusername')
+def getusername():
+    email = request.args.get('email')
+    user = User.query.filter_by(email=email).first()
+    result = user.username if user else None
+    return jsonify({"username": result})
 
 if __name__ == '__main__':
     app.run(debug=True)
