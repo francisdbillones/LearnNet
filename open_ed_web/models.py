@@ -1,7 +1,13 @@
-from open_ed_web import db
+from open_ed_web import db, loginManager
 from datetime import datetime
+from flask_login import UserMixin
 
-class User(db.Model):
+
+@loginManager.user_loader
+def load_user(userID):
+    return User.query.get(int(userID))
+
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)

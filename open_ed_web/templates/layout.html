@@ -35,7 +35,7 @@
                 <li class='nav-item'><a class='nav-link' href='{{ url_for("browse") }}'>Browse</a></li>
                 <li class='nav-item'><a class='nav-link' href='{{ url_for("upload") }}'>Upload</a></li>
             </ul>
-            {% if session.userID %}
+            {% if current_user.is_authenticated %}
             <ul class='navbar-nav ml-auto mt-2'>
                 <li class='nav-item'><a class='nav-link' href='/signout'>Sign Out</a></li>
             </ul>
