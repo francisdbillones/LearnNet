@@ -8,3 +8,4 @@ wtforms
 email_validator
 flask-bcrypt
 Pillow
+sqlite3
