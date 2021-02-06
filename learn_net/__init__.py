@@ -35,4 +35,4 @@ def after_request(response):
     response.headers['Pragma'] = 'no-cache'
     return response
 
-from open_ed_web import routes
+from learn_net import routes
