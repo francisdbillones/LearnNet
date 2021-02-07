@@ -7,47 +7,47 @@
 {% block main %}
 <div class='content-section mb-2'>
     <form action='' method='POST'>
-        {{ form.hidden_tag() }}
+        {{ signInForm.hidden_tag() }}
         <fieldset class='form-group'>
             <legend class='border-bottom mb-4'>Hello, user. Please sign in.</legend>
 
             <div class='form-group'>
-                {{ form.email.label(class='form=control-label') }} 
+                {{ signInForm.email.label(class='form=control-label') }} 
 
-                {% if form.email.errors %}
+                {% if signInForm.email.errors %}
                     <!-- display errors !-->
-                    {{ form.email(class='form-control form-control-lg is-invalid', autocomplete='off', autofocus=true) }}
+                    {{ signInForm.email(class='form-control form-control-lg is-invalid', autocomplete='off', autofocus=true) }}
                     <div class='invalid-feedback'>
-                        {% for error in form.email.errors %}
+                        {% for error in signInForm.email.errors %}
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
 
                 {% else %}
-                    {{ form.email(class='form-control form-control-lg', autocomplete='off', autofocus=true) }}
+                    {{ signInForm.email(class='form-control form-control-lg', autocomplete='off', autofocus=true) }}
                 {% endif %}
             </div>
 
             <div class='form-group'>
-                {{ form.password.label(class='form=control-label') }} 
+                {{ signInForm.password.label(class='form=control-label') }} 
 
-                {% if form.password.errors %}
+                {% if signInForm.password.errors %}
                     <!-- display errors !-->
-                    {{ form.password(class='form-control form-control-lg is-invalid', autocomplete='off') }}
+                    {{ signInForm.password(class='form-control form-control-lg is-invalid', autocomplete='off') }}
                     <div class='invalid-feedback'>
-                        {% for error in form.password.errors %}
+                        {% for error in signInForm.password.errors %}
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
 
                 {% else %}
-                    {{ form.password(class='form-control form-control-lg', autocomplete='off') }}
+                    {{ signInForm.password(class='form-control form-control-lg', autocomplete='off') }}
                 {% endif %}
             </div>
 
             <div class='form-check'>
-                {{ form.remember(class='form-check-input') }}
-                {{ form.remember.label(class='form-check-label') }}
+                {{ signInForm.remember(class='form-check-input') }}
+                {{ signInForm.remember.label(class='form-check-label') }}
             </div>
 
             <small class='text-muted ml-2'>
@@ -55,7 +55,7 @@
             </small>
 
         </fieldset>
-        {{ form.submit(class='btn btn-outline-info') }}
+        {{ signInForm.submit(class='btn btn-outline-info') }}
     </form>
 </div>
 <div class='border-top pt-3'>

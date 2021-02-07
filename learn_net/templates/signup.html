@@ -5,80 +5,80 @@
 {% block main %}
 <div class='content-section mb-2'>
     <form action='' method='POST'>
-        {{ form.hidden_tag() }}
+        {{ signUpForm.hidden_tag() }}
         <fieldset class='form-group'>
             <legend class='border-bottom mb-4'>Sign up</legend>
             <div class='form-group'>
-                {{ form.username.label(class='form=control-label') }} 
+                {{ signUpForm.username.label(class='form=control-label') }} 
 
-                {% if form.username.errors %}
+                {% if signUpForm.username.errors %}
                     <!-- display errors !-->
-                    {{ form.username(class='form-control form-control-lg is-invalid', autocomplete='off') }}
+                    {{ signUpForm.username(class='form-control form-control-lg is-invalid', autocomplete='off') }}
                     <div class='invalid-feedback'>
-                        {% for error in form.username.errors %}
+                        {% for error in signUpForm.username.errors %}
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
 
                 {% else %}
-                    {{ form.username(class='form-control form-control-lg', autocomplete='off', autofocus=true) }}
+                    {{ signUpForm.username(class='form-control form-control-lg', autocomplete='off', autofocus=true) }}
                 {% endif %}
             </div>
 
             <div class='form-group'>
-                {{ form.email.label(class='form=control-label') }} 
+                {{ signUpForm.email.label(class='form=control-label') }} 
 
-                {% if form.email.errors %}
+                {% if signUpForm.email.errors %}
                     <!-- display errors !-->
-                    {{ form.email(class='form-control form-control-lg is-invalid', autocomplete='off') }}
+                    {{ signUpForm.email(class='form-control form-control-lg is-invalid', autocomplete='off') }}
                     <div class='invalid-feedback'>
-                        {% for error in form.email.errors %}
+                        {% for error in signUpForm.email.errors %}
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
 
                 {% else %}
-                    {{ form.email(class='form-control form-control-lg', autocomplete='off') }}
+                    {{ signUpForm.email(class='form-control form-control-lg', autocomplete='off') }}
                 {% endif %}
                 <small id='emailHelp' class='form-text text-muted'>We'll never share your email with anyone else.</small>
             </div>
 
             <div class='form-group'>
-                {{ form.password.label(class='form=control-label') }} 
+                {{ signUpForm.password.label(class='form=control-label') }} 
 
-                {% if form.password.errors %}
+                {% if signUpForm.password.errors %}
                     <!-- display errors !-->
-                    {{ form.password(class='form-control form-control-lg is-invalid', autocomplete='off') }}
+                    {{ signUpForm.password(class='form-control form-control-lg is-invalid', autocomplete='off') }}
                     <div class='invalid-feedback'>
-                        {% for error in form.password.errors %}
+                        {% for error in signUpForm.password.errors %}
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
 
                 {% else %}
-                    {{ form.password(class='form-control form-control-lg', autocomplete='off') }}
+                    {{ signUpForm.password(class='form-control form-control-lg', autocomplete='off') }}
                 {% endif %}
             </div>
 
             <div class='form-group'>
-                {{ form.confirm_password.label(class='form=control-label') }} 
+                {{ signUpForm.confirm_password.label(class='form=control-label') }} 
 
-                {% if form.confirm_password.errors %}
+                {% if signUpForm.confirm_password.errors %}
                     <!-- display errors !-->
-                    {{ form.confirm_password(class='form-control form-control-lg is-invalid', autocomplete='off') }}
+                    {{ signUpForm.confirm_password(class='form-control form-control-lg is-invalid', autocomplete='off') }}
                     <div class='invalid-feedback'>
-                        {% for error in form.confirm_password.errors %}
+                        {% for error in signUpForm.confirm_password.errors %}
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
 
                 {% else %}
-                    {{ form.confirm_password(class='form-control form-control-lg', autocomplete='off') }}
+                    {{ signUpForm.confirm_password(class='form-control form-control-lg', autocomplete='off') }}
                 {% endif %}
             </div>
 
         </fieldset>
-        {{ form.submit(class='btn btn-outline-info') }}
+        {{ signUpForm.submit(class='btn btn-outline-info') }}
     </form>
 </div>
 <div class='border-top pt-3'>

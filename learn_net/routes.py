@@ -18,13 +18,13 @@ def index():
 def signup():
     # create a new user and sign in
     
-    form = SignUpForm()
-    if form.validate_on_submit():
+    signUpForm = SignUpForm()
+    if signUpForm.validate_on_submit():
         
         user = User(
-            username=form.username.data,
-            email=form.email.data,
-            password=bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+            username=signUpForm.username.data,
+            email=signUpForm.email.data,
+            password=bcrypt.generate_password_hash(signUpForm.password.data).decode('utf-8')
         )
 
         db.session.add(user)
@@ -34,25 +34,25 @@ def signup():
         flash('Account created!', 'success')
         
         return redirect(url_for('index'))
-    return render_template('signup.html', form=form)
+    return render_template('signup.html', signUpForm=signUpForm)
     
 @app.route("/signin", methods=['GET', 'POST'])
 def signin():
     # sign in user
     
-    form = SignInForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+    signInForm = SignInForm()
+    if signInForm.validate_on_submit():
+        user = User.query.filter_by(email=signInForm.email.data).first()
         
-        if bcrypt.check_password_hash(user.password, form.password.data):
-            login_user(user, remember=form.remember.data)
+        if bcrypt.check_password_hash(user.password, signInForm.password.data):
+            login_user(user, remember=signInForm.remember.data)
             
             next_page = request.args.get('next')
             flash('Successfully signed in!', 'success')
             return redirect(url_for('index')) if not next_page else redirect(next_page)
         else:
             flash('Error signing in. Check your password.', 'danger')
-    return render_template('signin.html', form=form)
+    return render_template('signin.html', signInForm=signInForm)
 
 @app.route('/signout')
 @login_required
@@ -68,27 +68,36 @@ def signout():
 @app.route('/account', methods=['GET', 'POST'])
 @login_required
 def account():
-    form = UpdateAccountForm()
+    updateAccountForm = UpdateAccountForm()
     
-    if form.validate_on_submit():
-        current_user.username = form.username.data
-        current_user.email = form.email.data
+    if updateAccountForm.validate_on_submit():
+        changed = False
+        if current_user.username != updateAccountForm.username.data:
+            current_user.username = updateAccountForm.username.data
+            changed = True
         
-        if form.pfp_file.data:
+        if current_user.email != updateAccountForm.email.data:
+            current_user.email = updateAccountForm.email.data
+            changed = True
+        
+        if updateAccountForm.pfp_file.data:
             delete_profile_picture(current_user.pfp_file)
-            current_user.pfp_file = save_profile_picture(form.pfp_file.data)
+            current_user.pfp_file = save_profile_picture(updateAccountForm.pfp_file.data)
+            changed = True
         
         db.session.commit()
-        flash('Your account has been updated!', 'success')
+        
+        if changed:
+            flash('Your account has been updated.', 'info')
         return redirect(url_for('account'))
     
     elif request.method == 'GET':
         # pre-fill fields
-        form.username.data = current_user.username
-        form.email.data = current_user.email
+        updateAccountForm.username.data = current_user.username
+        updateAccountForm.email.data = current_user.email
         
     profile_image = url_for('static', filename=f'images/{ current_user.pfp_file }')
-    return render_template('account.html', profile_image=profile_image, form=form)
+    return render_template('account.html', profile_image=profile_image, updateAccountForm=updateAccountForm)
 
 @app.route('/browse', methods=['GET', 'POST'])
 def browse():
@@ -104,20 +113,20 @@ def upload():
     # upload new content
     # TODO upload route
     
-    form = UploadContentForm()
+    uploadContentForm = UploadContentForm()
     
-    if form.validate_on_submit():
+    if uploadContentForm.validate_on_submit():
         content = Content(
             author = current_user,
-            title = form.title.data,
-            school = form.school.data,
-            content_file = save_content_file(form.file.data),
-            file_type = getFileType(form.file.data)
+            title = uploadContentForm.title.data,
+            school = uploadContentForm.school.data,
+            content_file = save_content_file(uploadContentForm.file.data),
+            file_type = getFileType(uploadContentForm.file.data)
         )
         db.session.add(content)
         db.session.flush()
 
-        tags = [tag.strip() for tag in form.tags.data.split()]
+        tags = [tag.strip() for tag in uploadContentForm.tags.data.split()]
         for tag in tags:
             contentTag = ContentTag(tag=tag, content_id=content.id)
             db.session.add(contentTag)
@@ -125,8 +134,9 @@ def upload():
         db.session.commit()
         
         flash('Uploaded!', 'success')
-        return redirect(url_for('index'))
-    return render_template('upload.html', form=form)
+        return redirect(url_for('account'))
+    
+    return render_template('upload.html', uploadContentForm=uploadContentForm)
 
 @app.route('/getusername')
 def getusername():
