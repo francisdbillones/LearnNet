@@ -49,3 +49,8 @@ input[name='search']:invalid {
 a {
     text-decoration: none;
 }
+
+.user-Article {
+    background-color: gray;
+    border-radius: 25%
+}

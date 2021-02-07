@@ -4,92 +4,113 @@
 {% block main %}
 <div class='content-section'>
     <form action='' method='POST' enctype='multipart/form-data'>
-        {{ form.hidden_tag() }}
+        {{ uploadArticleForm.hidden_tag() }}
         <fieldset class='form-group'>
             <legend class='border-bottom mb-4'>Upload</legend>
             <div class='form-group'>
-                {{ form.title.label(class='form=control-label') }} 
-                {% if form.title.errors %}
+                {{ uploadArticleForm.title.label(class='form=control-label') }} 
+                {% if uploadArticleForm.title.errors %}
                   <!-- display errors !-->
-                  {{ form.title(class='form-control form-control-lg is-invalid', autocomplete='off') }}
+                  {{ uploadArticleForm.title(class='form-control form-control-lg is-invalid', autocomplete='off') }}
                   <div class='invalid-feedback'>
-                      {% for error in form.title.errors %}
+                      {% for error in uploadArticleForm.title.errors %}
                       <span>{{ error }}</span> {% endfor %}
                   </div>
 
                 {% else %} 
-                  {{ form.title(class='form-control form-control-lg', autocomplete='off', autofocus=true) }}
+                  {{ uploadArticleForm.title(class='form-control form-control-lg', autocomplete='off', autofocus=true) }}
                   <small class='text-muted'>
-                    {{ form.title.description }}
-                  </small>
-                {% endif %}
-            </div>
-            <div class='form-group'>
-                {{ form.file.label(class='form=control-label') }} 
-                {% if form.file.errors %}
-                  <!-- display errors !-->
-                  {{ form.file(class='form-control form-control-lg is-invalid', autocomplete='off') }}
-                  <div class='invalid-feedback'>
-                      {% for error in form.file.errors %}
-                      <span>{{ error }}</span> {% endfor %}
-                  </div>
-
-                {% else %} 
-                  {{ form.file(class='form-control form-control-lg', autocomplete='off', autofocus=true) }}
-                  <small class='text-muted'>
-                    {{ form.file.description }}
+                    {{ uploadArticleForm.title.description }}
                   </small>
                 {% endif %}
             </div>
 
             <div class='form-group'>
-                {{ form.school.label(class='form=control-label') }} 
-                {% if form.school.errors %}
+                {{ uploadArticleForm.file.label(class='form=control-label') }} 
+                {% if uploadArticleForm.file.errors %}
+                  <!-- display errors !-->
+                  {{ uploadArticleForm.file(class='form-control form-control-lg is-invalid', autocomplete='off') }}
+                  <div class='invalid-feedback'>
+                      {% for error in uploadArticleForm.file.errors %}
+                      <span>{{ error }}</span> {% endfor %}
+                  </div>
+
+                {% else %} 
+                  {{ uploadArticleForm.file(class='form-control form-control-lg', autocomplete='off', autofocus=true) }}
+                  <small class='text-muted'>
+                    {{ uploadArticleForm.file.description }}
+                  </small>
+                {% endif %}
+            </div>
+
+            <div class='form-group'>
+                {{ uploadArticleForm.article_description.label(class='form=control-label') }} 
+                {% if uploadArticleForm.file.errors %}
+                  <!-- display errors !-->
+                  {{ uploadArticleForm.article_description(class='form-control form-control-lg is-invalid', autocomplete='off') }}
+                  <div class='invalid-feedback'>
+                      {% for error in uploadArticleForm.article_description.errors %}
+                      <span>{{ error }}</span> {% endfor %}
+                  </div>
+
+                {% else %} 
+                  {{ uploadArticleForm.article_description(class='form-control form-control-lg', autocomplete='off', autofocus=true) }}
+                  <small class='text-muted'>
+                    {{ uploadArticleForm.article_description.description }}
+                  </small>
+                {% endif %}
+            </div>
+
+            <div class='form-group'>
+                {{ uploadArticleForm.school.label(class='form=control-label') }} 
+                {% if uploadArticleForm.school.errors %}
                     <!-- display errors !-->
-                    {{ form.school(class='form-control form-control-lg is-invalid', autocomplete='off') }}
+                    {{ uploadArticleForm.school(class='form-control form-control-lg is-invalid', autocomplete='off') }}
                     <div class='invalid-feedback'>
-                        {% for error in form.school.errors %}
+                        {% for error in uploadArticleForm.school.errors %}
                             <span>{{ error }}</span> 
                         {% endfor %}
                     </div>
 
                 {% else %} 
-                  {{ form.school(class='form-control form-control-lg', autocomplete='off') }} 
+                  {{ uploadArticleForm.school(class='form-control form-control-lg', autocomplete='off') }} 
                   <small class='text-muted'>
-                    {{ form.school.description }}
+                    {{ uploadArticleForm.school.description }}
                   </small>
                 {% endif %}
             </div>
+
             <div class='form-group'>
-                {{ form.category.label(class='form=control-label') }}  
-                {% if form.category.errors %}
+                {{ uploadArticleForm.category.label(class='form=control-label') }}  
+                {% if uploadArticleForm.category.errors %}
                   <!-- display errors !-->
-                    {% for error in form.category.errors %}
+                    {% for error in uploadArticleForm.category.errors %}
                       <span class='text-danger'>{{ error }}</span> 
                     {% endfor %}
                   {% else %} 
-                    {{ form.category(class='form-control form-control-lg', autocomplete='off') }} 
+                    {{ uploadArticleForm.category(class='form-control form-control-lg', autocomplete='off') }} 
                     <small class='text-muted'>
-                      {{ form.category.description }}
+                      {{ uploadArticleForm.category.description }}
                     </small>
                 {% endif %}
             </div>
+
             <div class='form-group'>
-                {{ form.tags.label(class='form=control-label') }} 
-                {% if form.tags.errors %}
+                {{ uploadArticleForm.tags.label(class='form=control-label') }} 
+                {% if uploadArticleForm.tags.errors %}
                   <!-- display errors !-->
-                    {% for error in form.tags.errors %}
+                    {% for error in uploadArticleForm.tags.errors %}
                       <span class='text-danger'>{{ error }}</span> 
                     {% endfor %}
                 {% else %} 
-                    {{ form.tags(class='form-control form-control-lg', autocomplete='off') }} 
+                    {{ uploadArticleForm.tags(class='form-control form-control-lg', autocomplete='off') }} 
                     <small class='text-muted'>
-                      {{ form.tags.description }}
+                      {{ uploadArticleForm.tags.description }}
                     </small>
                 {% endif %}
             </div>
         </fieldset>
-        {{ form.submit(class='btn btn-outline-info') }}
+        {{ uploadArticleForm.submit(class='btn btn-outline-info') }}
     </form>
 </div>
 {% endblock %}

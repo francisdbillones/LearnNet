@@ -1,9 +1,9 @@
-from wtforms.fields import StringField, PasswordField, SubmitField, BooleanField, SelectField
+from wtforms.fields import StringField, PasswordField, SubmitField, BooleanField, SelectField, TextAreaField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
-from learn_net.models import User
+from learn_net.models import User, Article, ArticleTag
 
 # registration form
 class SignUpForm(FlaskForm):
@@ -50,16 +50,32 @@ class UpdateAccountForm(FlaskForm):
             if User.query.filter_by(username=username.data).first():
                 raise ValidationError('That username is taken. Please choose a different one.')  
 
-# form for users to upload new content (documents, slides, etc)
-class UploadContentForm(FlaskForm):
+# form for users to upload new articles (documents, slides, etc)
+class UploadArticleForm(FlaskForm):
     title = StringField('Title', description='Add a title.', validators=[DataRequired(), Length(min=5, max=30)])
     file = FileField('File', validators=[FileAllowed([
         'doc', 'docx', 'pdf', 'odt', # document formats
         'ppt', 'pptx', 'pptm' # slideshow formats
     ])])
+    article_description = TextAreaField('Description', description='Add a short description.', validators=[DataRequired(), Length(min=20, max=500)])
     school = StringField('School', description="From what school is this from? If you don't set anything, it'll be your school by default.")
     category = SelectField('Category', description='For what topic is this for?', choices=[
         'Language', 'Mathematics', 'Science', 'Health', 'Physical Education', 'Art', 'Music', 'Other'
     ])
     tags = StringField('Tags', description='Tags provide unique identification. Add some so that others can search for your uploads easier. Seperate tags with a comma.')
     submit = SubmitField('Post')
+
+# form for users to edit their article
+class EditArticleForm(FlaskForm):
+    title = StringField('Title', description='Edit title.', validators=[DataRequired(), Length(min=5, max=30)])
+    file = FileField('File', validators=[DataRequired(), FileAllowed([
+        'doc', 'docx', 'pdf', 'odt', # document formats
+        'ppt', 'pptx', 'pptm' # slideshow formats
+    ])])
+    article_description = TextAreaField('Description', description='Add a short description.', validators=[DataRequired(), Length(min=20, max=500)])
+    school = StringField('School', description="Edit original school.")
+    category = SelectField('Category', description='Edit topic.', choices=[
+        'Language', 'Mathematics', 'Science', 'Health', 'Physical Education', 'Art', 'Music', 'Other'
+    ])
+    tags = StringField('Tags', description='Add or remove tags.')
+    submit = SubmitField('Update')

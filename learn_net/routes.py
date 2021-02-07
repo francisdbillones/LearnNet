@@ -2,10 +2,10 @@ from flask import render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 
 from learn_net.forms import *
-from learn_net.models import ContentTag, User, Content
+from learn_net.models import  User, Article, ArticleTag
 from learn_net import app, db, bcrypt, session
 
-from learn_net.helpers import save_profile_picture, delete_profile_picture, save_content_file, getFileType
+from learn_net.helpers import save_profile_picture, save_article_file, getFileType
 
 import secrets
 
@@ -81,8 +81,7 @@ def account():
             changed = True
         
         if updateAccountForm.pfp_file.data:
-            delete_profile_picture(current_user.pfp_file)
-            current_user.pfp_file = save_profile_picture(updateAccountForm.pfp_file.data)
+            save_profile_picture(updateAccountForm.pfp_file.data)
             changed = True
         
         db.session.commit()
@@ -95,9 +94,11 @@ def account():
         # pre-fill fields
         updateAccountForm.username.data = current_user.username
         updateAccountForm.email.data = current_user.email
-        
+    
+    userArticles = Article.query.filter_by(user_id=current_user.id)
+    
     profile_image = url_for('static', filename=f'images/{ current_user.pfp_file }')
-    return render_template('account.html', profile_image=profile_image, updateAccountForm=updateAccountForm)
+    return render_template('account.html', profile_image=profile_image, updateAccountForm=updateAccountForm, userArticles=userArticles)
 
 @app.route('/browse', methods=['GET', 'POST'])
 def browse():
@@ -110,33 +111,39 @@ def browse():
 @app.route('/upload', methods=['GET', 'POST'])
 @login_required
 def upload():
-    # upload new content
+    # upload new Article
     # TODO upload route
     
-    uploadContentForm = UploadContentForm()
+    uploadArticleForm = UploadArticleForm()
     
-    if uploadContentForm.validate_on_submit():
-        content = Content(
-            author = current_user,
-            title = uploadContentForm.title.data,
-            school = uploadContentForm.school.data,
-            content_file = save_content_file(uploadContentForm.file.data),
-            file_type = getFileType(uploadContentForm.file.data)
+    if uploadArticleForm.validate_on_submit():
+        article = Article(
+            user_id = current_user.id,
+            title = uploadArticleForm.title.data,
+            article_description = uploadArticleForm.article_description.data,
+            school = uploadArticleForm.school.data,
+            file = save_article_file(uploadArticleForm.file.data),
+            file_type = getFileType(uploadArticleForm.file.data)
         )
-        db.session.add(content)
+        db.session.add(article)
         db.session.flush()
 
-        tags = [tag.strip() for tag in uploadContentForm.tags.data.split()]
+        tags = [tag.strip() for tag in uploadArticleForm.tags.data.split()]
         for tag in tags:
-            contentTag = ContentTag(tag=tag, content_id=content.id)
-            db.session.add(contentTag)
+            articleTag = ArticleTag(tag=tag, article_id=article.id)
+            db.session.add(articleTag)
         
         db.session.commit()
         
         flash('Uploaded!', 'success')
         return redirect(url_for('account'))
     
-    return render_template('upload.html', uploadContentForm=uploadContentForm)
+    return render_template('upload.html', uploadArticleForm=uploadArticleForm)
+
+@app.route('/article', methods=['GET', 'POST'])
+def article():
+    # TODO display articles
+    return redirect('/')
 
 @app.route('/getusername')
 def getusername():

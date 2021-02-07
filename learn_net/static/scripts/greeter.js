@@ -22,7 +22,7 @@ function getUsername(email) {
     });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMArticleLoaded', function() {
 
     const input = document.querySelector('input#email');
     const greeter = document.querySelector('legend');
