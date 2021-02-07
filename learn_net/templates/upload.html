@@ -18,7 +18,10 @@
                   </div>
 
                 {% else %} 
-                  {{ form.title(class='form-control form-control-lg', autocomplete='off', autofocus=true) }} 
+                  {{ form.title(class='form-control form-control-lg', autocomplete='off', autofocus=true) }}
+                  <small class='text-muted'>
+                    {{ form.title.description }}
+                  </small>
                 {% endif %}
             </div>
             <div class='form-group'>
@@ -32,7 +35,10 @@
                   </div>
 
                 {% else %} 
-                  {{ form.file(class='form-control form-control-lg', autocomplete='off', autofocus=true) }} 
+                  {{ form.file(class='form-control form-control-lg', autocomplete='off', autofocus=true) }}
+                  <small class='text-muted'>
+                    {{ form.file.description }}
+                  </small>
                 {% endif %}
             </div>
 
@@ -49,26 +55,37 @@
 
                 {% else %} 
                   {{ form.school(class='form-control form-control-lg', autocomplete='off') }} 
+                  <small class='text-muted'>
+                    {{ form.school.description }}
+                  </small>
                 {% endif %}
             </div>
             <div class='form-group'>
-                {{ form.category.label(class='form=control-label') }} 
-                {{ form.category(class='form-control form-control-lg', autocomplete='off') }} 
+                {{ form.category.label(class='form=control-label') }}  
                 {% if form.category.errors %}
                   <!-- display errors !-->
                     {% for error in form.category.errors %}
                       <span class='text-danger'>{{ error }}</span> 
                     {% endfor %}
+                  {% else %} 
+                    {{ form.category(class='form-control form-control-lg', autocomplete='off') }} 
+                    <small class='text-muted'>
+                      {{ form.category.description }}
+                    </small>
                 {% endif %}
             </div>
             <div class='form-group'>
                 {{ form.tags.label(class='form=control-label') }} 
-                {{ form.tags(class='form-control form-control-lg', autocomplete='off') }} 
                 {% if form.tags.errors %}
                   <!-- display errors !-->
                     {% for error in form.tags.errors %}
                       <span class='text-danger'>{{ error }}</span> 
                     {% endfor %}
+                {% else %} 
+                    {{ form.tags(class='form-control form-control-lg', autocomplete='off') }} 
+                    <small class='text-muted'>
+                      {{ form.tags.description }}
+                    </small>
                 {% endif %}
             </div>
         </fieldset>

@@ -61,5 +61,5 @@ class UploadContentForm(FlaskForm):
     category = SelectField('Category', description='For what topic is this for?', choices=[
         'Language', 'Mathematics', 'Science', 'Health', 'Physical Education', 'Art', 'Music', 'Other'
     ])
-    tags = StringField('Tags', description='Tags provide unique identification. Add some so that others can search for your uploads easier.')
+    tags = StringField('Tags', description='Tags provide unique identification. Add some so that others can search for your uploads easier. Seperate tags with a comma.')
     submit = SubmitField('Post')
