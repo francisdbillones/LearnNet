@@ -2,83 +2,90 @@
 {% block head %}
 <link href='{{ url_for("static", filename="styles/account_page.css") }}' type='text/css' rel='stylesheet'> 
 {% endblock %} 
-{% block title %}Account{% endblock %} {% block main %}
-    <div class='content-section'>
-        <div class='media'>
-            <img alt='profile picture' class='rounded-circle account-img' src='{{ url_for("static", filename="images/profile_pictures/" + current_user.pfp_file) }}'>
-            <div class='media-body'>
-                <h2 class='account-heading'>Hello, {{ current_user.username }}.</h2>
-                <p class='text-secondary'>{{ current_user.email }}</p>
-            </div>
+{% block title %}Account{% endblock %} 
+
+{% block main %}
+<div class='content-section'>
+    <div class='media'>
+        <img alt='profile picture' class='rounded-circle account-img' src='{{ url_for("static", filename="images/profile_pictures/" + current_user.pfp_file) }}'>
+        <div class='media-body'>
+            <h2 class='account-heading'>Hello, {{ current_user.username }}.</h2>
+            <p class='text-secondary'>{{ current_user.email }}</p>
         </div>
-        <form action='' method='POST' enctype='multipart/form-data'>
-            {{ updateAccountForm.hidden_tag() }}
-            <fieldset class='form-group'>
-                <legend class='border-bottom mb-4'>Account details</legend>
-                <div class='form-group'>
-                    {{ updateAccountForm.username.label(class='form=control-label') }} 
-                    {% if updateAccountForm.username.errors %}
+    </div>
+    <form action='' method='POST' enctype='multipart/form-data'>
+        {{ updateAccountForm.hidden_tag() }}
+        <fieldset class='form-group'>
+            <legend class='border-bottom mb-4'>Account details</legend>
+            <div class='form-group'>
+                {{ updateAccountForm.username.label(class='form=control-label') }} 
+                
+                {% if updateAccountForm.username.errors %}
                     <!-- display errors !-->
                     {{ updateAccountForm.username(class='form-control form-control-lg is-invalid', autocomplete='off') }}
                     <div class='invalid-feedback'>
                         {% for error in updateAccountForm.username.errors %}
-                        <span>{{ error }}</span> {% endfor %}
-                    </div>
-
-                    {% else %} 
-                    {{ updateAccountForm.username(class='form-control form-control-lg', autocomplete='off', autofocus=true) }} 
-                    {% endif %}
-                </div>
-
-                <div class='form-group'>
-                    {{ updateAccountForm.email.label(class='form=control-label') }} 
-                    {% if updateAccountForm.email.errors %}
-                        <!-- display errors !-->
-                        {{ updateAccountForm.email(class='form-control form-control-lg is-invalid', autocomplete='off') }}
-                        <div class='invalid-feedback'>
-                            {% for error in updateAccountForm.email.errors %}
-                                <span>{{ error }}</span> 
-                            {% endfor %}
-                        </div>
-
-                    {% else %} 
-                    {{ updateAccountForm.email(class='form-control form-control-lg', autocomplete='off') }} 
-                    {% endif %}
-                </div>
-                <div class='form-group'>
-                    {{ updateAccountForm.pfp_file.label(class='form=control-label') }} 
-                    {{ updateAccountForm.pfp_file(class='form-control form-control-lg', autocomplete='off') }} 
-                    {% if updateAccountForm.pfp_file.errors %}
-                    <!-- display errors !-->
-                        {% for error in updateAccountForm.pfp_file.errors %}
-                        <span class='text-danger'>{{ error }}</span> 
+                            <span>{{ error }}</span> 
                         {% endfor %}
-                    {% endif %}
-                </div>
-            </fieldset>
-            {{ updateAccountForm.submit(class='btn btn-outline-info') }}
-        </form>
-    </div>
-
-    <!-- display users' uploads !-->
-
-    <div class='content-section'>
-        <h2 class='account-heading'>Your uploads</h2>
-
-        {% for article in userArticles %}
-            <div class='separate-article'>
-                <a href='{{ url_for("article", article=article) }}'>
-                    <div class='media-body'>
-                        <div class='article-metadata'>
-                        <h2 class='article-title'>{{ article.title }}</h2>
-                        <span>
-                            <small class='text-muted'>Date uploaded: {{ article.date_uploaded.strftime('%Y-%m-%d') }}</small>
-                            <small class='text-muted'>Type: {{ article.file_type }}</small>
-                        </span>
-                        <p class='article-content'>{{ article.article_description }}</p>
                     </div>
-                </a>
-            <div>
-        {% endfor %}
+
+                {% else %} 
+                    {{ updateAccountForm.username(class='form-control form-control-lg', autocomplete='off', autofocus=true) }} 
+                {% endif %}
+            </div>
+
+            <div class='form-group'>
+                {{ updateAccountForm.email.label(class='form=control-label') }} 
+                {% if updateAccountForm.email.errors %}
+                    <!-- display errors !-->
+                    {{ updateAccountForm.email(class='form-control form-control-lg is-invalid', autocomplete='off') }}
+                    <div class='invalid-feedback'>
+                        {% for error in updateAccountForm.email.errors %}
+                            <span>{{ error }}</span> 
+                        {% endfor %}
+                    </div>
+
+                {% else %} 
+                    {{ updateAccountForm.email(class='form-control form-control-lg', autocomplete='off') }} 
+                {% endif %}
+            </div>
+            <div class='form-group'>
+                {{ updateAccountForm.pfp_file.label(class='form=control-label') }} 
+                {% if updateAccountForm.pfp_file.errors %}
+                    <!-- display errors !-->
+                    {% for error in updateAccountForm.pfp_file.errors %}
+                        <span class='text-danger'>{{ error }}</span> 
+                    {% endfor %}
+
+                {% else %} 
+                    {{ updateAccountForm.pfp_file(class='form-control form-control-lg', autocomplete='off') }} 
+                {% endif %}
+            </div>
+        </fieldset>
+        {{ updateAccountForm.submit(class='btn btn-outline-info') }}
+    </form>
+</div>
+
+<!-- display users' uploads !-->
+
+<div class='content-section'>
+    <h2 class='account-heading'>Your uploads</h2>
+
+    {% for article in userArticles %}
+    <div class='separate-article'>
+        <a href='{{ url_for("article", article=article) }}'>
+            <h2 class='article-title'>{{ article.title }}</h2>
+        </a>
+        <div class='media-body'>
+            <div class='article-metadata'>
+                <span>
+                    <small class='text-muted'>Date uploaded: {{ article.date_uploaded.strftime('%Y-%m-%d') }}</small>
+                    <small class='text-muted'>Type: {{ article.file_type }}</small>
+                </span>
+                <p class='article-content'>{{ article.article_description }}</p>
+            </div>
+        </div>
     </div>
+    {% endfor %}
+</div>
 {% endblock %}

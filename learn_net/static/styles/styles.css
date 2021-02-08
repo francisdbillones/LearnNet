@@ -46,11 +46,17 @@ input[name='search']:invalid {
 
 /* links should not have underlines, just a personal styling choice */
 
-a {
+a:hover {
     text-decoration: none;
 }
 
-.user-Article {
-    background-color: gray;
-    border-radius: 25%
+.separate-article {
+    background-color: rgb(240, 240, 240);
+    border-radius: 25px;
+    padding: 1%;
+    transition: 0.3s;
+}
+
+.separate-article:hover {
+    background-color: rgb(230, 230, 230)
 }
