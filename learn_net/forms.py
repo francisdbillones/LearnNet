@@ -1,9 +1,11 @@
-from wtforms.fields import StringField, PasswordField, SubmitField, BooleanField, SelectField, TextAreaField
+import secrets
+from wtforms.fields import StringField, PasswordField, SubmitField, BooleanField, SelectField, TextAreaField, RadioField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
 from learn_net.models import User, Article, ArticleTag
+from learn_net.helpers import FILE_CATEGORIES
 
 # registration form
 class SignUpForm(FlaskForm):
@@ -79,3 +81,23 @@ class EditArticleForm(FlaskForm):
     ])
     tags = StringField('Tags', description='Add or remove tags.')
     submit = SubmitField('Update')
+
+# simple form with text search only
+class SimpleSearchForm(FlaskForm):
+    query = StringField('Search query', validators=[DataRequired(), Length(min=5, max=100)])
+    submit = SubmitField('Search')
+
+class SearchFilterForm(FlaskForm):
+    pass
+
+    sort_by = RadioField('Sort by', choices=[
+        'Relevancy', 'Recency'
+    ])
+    school = StringField('School', validators=[Length(min=2, max=50)])
+    file_type = RadioField('File type', choices=[FILE_CATEGORIES])
+
+# form for users to search + filter
+class ExtendedSearchForm(FlaskForm):
+    query = StringField('Search query', validators=[DataRequired(), Length(min=5, max=100)])
+    filter = SearchFilterForm()
+    submit = SubmitField('Search')

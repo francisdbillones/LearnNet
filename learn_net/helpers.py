@@ -30,15 +30,20 @@ def save_article_file(file):
     
     return filename
 
+FILE_CATEGORIES = [
+    'Document',
+    'Slideshow'
+]
+
 FILE_TYPES = {
-    '.doc': 'Document',
-    '.docx': 'Document',
-    '.pdf': 'Document',
-    '.odt': 'Document',
+    '.doc': FILE_CATEGORIES[0],
+    '.docx': FILE_CATEGORIES[0],
+    '.pdf': FILE_CATEGORIES[0],
+    '.odt': FILE_CATEGORIES[0],
     
-    '.ppt': 'Slideshow',
-    '.pptx': 'Slideshow',
-    '.pptm': 'Slideshow'
+    '.ppt': FILE_CATEGORIES[1],
+    '.pptx': FILE_CATEGORIES[1],
+    '.pptm': FILE_CATEGORIES[1]
 }
 
 def getFileType(file):
