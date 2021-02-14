@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block title %} View kits {% endblock %}
+
+{% block main %}
+<div class='content-section'>
+    <h2 class='account-heading'>Your kits</h2>
+    
+    {% for kit in userKits %}
+    <div class='kit-body'>
+        <a href='{{ url_for("kits", kit=kit) }}'>
+            <h2 class='article-title'>{{ kit.title }}</h2>
+        </a>
+        <div class='media-body'>
+            <div class='article-metadata'>
+                <p class='article-content'>{{ kit.kit_description }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

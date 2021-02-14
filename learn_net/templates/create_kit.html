@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+{% block title %} Upload {% endblock %}
+
+{% block main %}
+<div class='content-section'>
+    <form action='' method='POST' enctype='multipart/form-data'>
+        {{ createKitForm.hidden_tag() }}
+        <fieldset class='form-group'>
+            <legend class='border-bottom mb-4'>Create a new kit</legend>
+            <div class='form-group'>
+                {{ createKitForm.title.label(class='form=control-label') }} 
+                {% if createKitForm.title.errors %}
+                  <!-- display errors !-->
+                  {{ createKitForm.title(class='form-control form-control-lg is-invalid', autocomplete='off') }}
+                  <div class='invalid-feedback'>
+                      {% for error in createKitForm.title.errors %}
+                      <span>{{ error }}</span> 
+                      {% endfor %}
+                  </div>
+                {% else %} 
+                  {{ createKitForm.title(class='form-control form-control-lg', autocomplete='off', autofocus=true) }}
+                  <small class='text-muted'>
+                    {{ createKitForm.title.description }}
+                  </small>
+                {% endif %}
+            </div>
+
+            <div class='form-group'>
+                {{ createKitForm.kit_description.label(class='form=control-label') }} 
+                {% if createKitForm.kit_description.errors %}
+                  <!-- display errors !-->
+                  {{ createKitForm.kit_description(class='form-control form-control-lg is-invalid', autocomplete='off') }}
+                  <div class='invalid-feedback'>
+                      {% for error in createKitForm.kit_description.errors %}
+                      <span>{{ error }}</span> {% endfor %}
+                  </div>
+
+                {% else %} 
+                  {{ createKitForm.kit_description(class='form-control form-control-lg', autocomplete='off', autofocus=true) }}
+                  <small class='text-muted'>
+                    {{ createKitForm.kit_description.description }}
+                  </small>
+                {% endif %}
+            </div>
+
+            <div class='form-group'>
+                {{ createKitForm.category.label(class='form=control-label') }}  
+                {% if createKitForm.category.errors %}
+                  <!-- display errors !-->
+                    {% for error in createKitForm.category.errors %}
+                      <span class='text-danger'>{{ error }}</span> 
+                    {% endfor %}
+                  {% else %} 
+                    {{ createKitForm.category(class='form-control form-control-lg', autocomplete='off') }} 
+                    <small class='text-muted'>
+                      {{ createKitForm.category.description }}
+                    </small>
+                {% endif %}
+            </div>
+
+            <div class='form-group'>
+                {{ createKitForm.tags.label(class='form=control-label') }} 
+                {% if createKitForm.tags.errors %}
+                  <!-- display errors !-->
+                    {% for error in createKitForm.tags.errors %}
+                      <span class='text-danger'>{{ error }}</span> 
+                    {% endfor %}
+                {% else %} 
+                    {{ createKitForm.tags(class='form-control form-control-lg', autocomplete='off') }} 
+                    <small class='text-muted'>
+                      {{ createKitForm.tags.description }}
+                    </small>
+                {% endif %}
+            </div>
+        </fieldset>
+        {{ createKitForm.submit(class='btn btn-outline-info') }}
+    </form>
+</div>
+{% endblock %}

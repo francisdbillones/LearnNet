@@ -20,11 +20,15 @@ def save_profile_picture(picture_file):
     image.thumbnail((125, 125))
     image.save(path)
 
-def save_article_file(file):
+def delete_profile_picture(picture_file):
+    path = os.path.join(app.root_path, 'static', 'images', 'profile_pictures', picture_file.filename)
+    os.remove(path)
+
+def save_kit_file(file):
     hexed_filename = secrets.token_hex(16)
     extension = os.path.splitext(file.filename)[1]
     filename = hexed_filename + extension
-    path = os.path.join(app.root_path, 'static', 'user_uploads', filename)
+    path = os.path.join(app.root_path, 'static', 'user_kits', filename)
     
     file.save(path)
     

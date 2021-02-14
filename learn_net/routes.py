@@ -2,10 +2,10 @@ from flask import render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 
 from learn_net.forms import *
-from learn_net.models import  User, Article, ArticleTag
+from learn_net.models import  User, Kit, KitFile, KitTag
 from learn_net import app, db, bcrypt, session
 
-from learn_net.helpers import save_profile_picture, save_article_file, getFileType
+from learn_net.helpers import save_profile_picture, save_kit_file, getFileType
 
 import secrets
 
@@ -66,84 +66,82 @@ def signout():
     return redirect(url_for('index'))
 
 @app.route('/account', methods=['GET', 'POST'])
-@login_required
 def account():
     updateAccountForm = UpdateAccountForm()
-    
+
     if updateAccountForm.validate_on_submit():
         changed = False
         if current_user.username != updateAccountForm.username.data:
             current_user.username = updateAccountForm.username.data
             changed = True
-        
+
         if current_user.email != updateAccountForm.email.data:
             current_user.email = updateAccountForm.email.data
             changed = True
-        
+
         if updateAccountForm.pfp_file.data:
             save_profile_picture(updateAccountForm.pfp_file.data)
             changed = True
-        
+
         db.session.commit()
-        
+
         if changed:
             flash('Your account has been updated.', 'info')
-        return redirect(url_for('account'))
-    
+
     elif request.method == 'GET':
         # pre-fill fields
         updateAccountForm.username.data = current_user.username
         updateAccountForm.email.data = current_user.email
-    
-    userArticles = Article.query.filter_by(user_id=current_user.id)
-    
+        
     profile_image = url_for('static', filename=f'images/{ current_user.pfp_file }')
-    return render_template('account.html', profile_image=profile_image, updateAccountForm=updateAccountForm, userArticles=userArticles)
+    return render_template('account.html', profile_image=profile_image, updateAccountForm=updateAccountForm)
 
 @app.route('/browse', methods=['GET', 'POST'])
 def browse():
     # browse index
     # TODO browse route
     
-    flash('That page does not exist yet, sorry.', 'info')
-    return redirect(url_for('index'))
+    extendedSearchForm = ExtendedSearchForm()
+    
+    return render_template('browse.html', extendedSearchForm=extendedSearchForm)
 
-@app.route('/upload', methods=['GET', 'POST'])
-@login_required
-def upload():
-    # upload new Article
-    # TODO upload route
+@app.route('/kits')
+def kits():
+    # view user's kits, saved kits, favourited kits, etc.
     
-    uploadArticleForm = UploadArticleForm()
+    userKits = Kit.query.filter_by(user_id = current_user.id)
     
-    if uploadArticleForm.validate_on_submit():
-        article = Article(
-            user_id = current_user.id,
-            title = uploadArticleForm.title.data,
-            article_description = uploadArticleForm.article_description.data,
-            school = uploadArticleForm.school.data,
-            file = save_article_file(uploadArticleForm.file.data),
-            file_type = getFileType(uploadArticleForm.file.data)
+    return render_template('kits.html', userKits=userKits)
+
+@app.route('/kits/create', methods=['GET', 'POST'])
+def create_kit():
+    # TODO create_kit route
+    createKitForm = CreateKitForm()
+    
+    if createKitForm.validate_on_submit():
+        kit = Kit(
+            owner = current_user,
+            title = createKitForm.title.data,
+            kit_description = createKitForm.kit_description.data,
+            category = createKitForm.category.data
         )
-        db.session.add(article)
-        db.session.flush()
-
-        tags = [tag.strip() for tag in uploadArticleForm.tags.data.split()]
-        for tag in tags:
-            articleTag = ArticleTag(tag=tag, article_id=article.id)
-            db.session.add(articleTag)
+        db.session.flush() # flush changes so that the kit will have an id that I can use
+        tags = [KitTag(tag = tag.strip(), kit_id = kit.id) for tag in createKitForm.tags.data.split(',')]
         
         db.session.commit()
         
-        flash('Uploaded!', 'success')
-        return redirect(url_for('account'))
+        flash('Successfully created kit!', 'success')
+        
     
-    return render_template('upload.html', uploadArticleForm=uploadArticleForm)
+    return render_template('create_kit.html', createKitForm=createKitForm)
 
-@app.route('/article', methods=['GET', 'POST'])
-def article():
-    # TODO display articles
-    return redirect('/')
+@app.route('/kits/<int:kitID>', methods=['GET', 'POST'])
+def view_kit(kitID):
+    pass
+
+# @app.route('/kits/<int:kitID>/edit', methods=['GET', 'POST'])
+# def edit_kit(kitID):
+#     pass
 
 @app.route('/getusername')
 def getusername():
