@@ -115,7 +115,6 @@ def kits():
 
 @app.route('/kits/create', methods=['GET', 'POST'])
 def create_kit():
-    # TODO create_kit route
     createKitForm = CreateKitForm()
     
     if createKitForm.validate_on_submit():
@@ -125,14 +124,18 @@ def create_kit():
             kit_description = createKitForm.kit_description.data,
             category = createKitForm.category.data
         )
-        db.session.flush() # flush changes so that the kit will have an id that I can use
-        tags = [KitTag(tag = tag.strip(), kit_id = kit.id) for tag in createKitForm.tags.data.split(',')]
+        db.session.add(kit)
+        db.session.flush() # do this so that kit.id is generated before committing
+        
+        for tag in createKitForm.tags.data.split(','):
+            kitTag = KitTag(tag = tag, kit_id = kit.id)
+            db.session.add(kitTag)
         
         db.session.commit()
         
         flash('Successfully created kit!', 'success')
+        return redirect(url_for('kits'))
         
-    
     return render_template('create_kit.html', createKitForm=createKitForm)
 
 @app.route('/kits/<int:kitID>', methods=['GET', 'POST'])
