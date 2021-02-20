@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends 'layout.html' %}
 {% block title %} View kits {% endblock %}
 
 {% block main %}
@@ -6,19 +6,19 @@
     <h2 class='account-heading'>Your kits</h2>
     
     {% for kit in userKits %}
-    <div class='kit-body'>
-        <a href='{{ url_for("kits", kit=kit) }}'>
-            <h2 class='article-title'>{{ kit.title }}</h2>
-        </a>
-        <div class='media-body'>
+        <article class='media content-section'>
+          <img class='rounded-circle article-img' src='{{ url_for("static", filename="/images/profile_pictures/" + kit.owner.pfp_file) }}' height='25px'    >
+          <div class='media-body'>
             <div class='article-metadata'>
-                <p class='article-content'>{{ kit.kit_description }}</p>
-                {% for tag in kit.tags %}
-                <span class='badge badge-pill badge-info'>{{ tag.tag }}</span>
-                {% endfor %}
+              <a class='mr-2' href='#'>{{ kit.owner.username }}</a>
+              <small class='text-muted'>{{ kit.category }}</small>
+              {% for tag in kit.tags %}
+              <span class='badge badge-pill badge-primary'>{{ tag.tag }}</span>
+              {% endfor %}
             </div>
-        </div>
-    </div>
+            <h2><a class='article-title' href='{{ url_for("view_kit", kitID=kit.id) }}'>{{ kit.title }}</a></h2>
+          </div>
+        </article>
     {% endfor %}
 </div>
 {% endblock %}

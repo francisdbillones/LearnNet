@@ -125,7 +125,7 @@ def create_kit():
             category = createKitForm.category.data
         )
         db.session.add(kit)
-        db.session.flush() # do this so that kit.id is generated before committing
+        db.session.flush() # do this so that kit.id is generated without having to commit first
         
         for tag in createKitForm.tags.data.split(','):
             kitTag = KitTag(tag = tag, kit_id = kit.id)
@@ -140,11 +140,52 @@ def create_kit():
 
 @app.route('/kits/<int:kitID>', methods=['GET', 'POST'])
 def view_kit(kitID):
-    pass
+    kit = Kit.query.filter_by(id = kitID).first()
+    
+    return render_template('view_kit.html', kit=kit)    
 
-# @app.route('/kits/<int:kitID>/edit', methods=['GET', 'POST'])
-# def edit_kit(kitID):
-#     pass
+@app.route('/kits/<int:kitID>/edit', methods=['GET', 'POST'])
+def edit_kit(kitID):
+    kit = Kit.query.filter_by(id = kitID).first()
+    if kit.owner.id != current_user.id:
+        flash('You\'re not allowed to do that.', 'danger')
+        return redirect(url_for('index'))
+
+    editKitForm = EditKitForm()
+    if editKitForm.validate_on_submit():
+        
+        if editKitForm.title.data:
+            kit.title = editKitForm.title.data
+            changed = True
+        
+        if editKitForm.kit_description.data:
+            kit.kit_description = editKitForm.kit_description.data
+            changed = True
+        
+        if editKitForm.category.data:
+            kit.category = editKitForm.category.data
+            changed = True
+        
+        if editKitForm.tags.data:
+            for tag in editKitForm.tags.data.split(','):
+                if tag not in kit.tags:
+                    new_tag = KitTag(kit_id = kit.id, tag = tag)
+                    db.session.add(new_tag)
+            changed = True
+        
+        db.session.commit()
+        
+        if changed:
+            flash('Changes saved.', 'success')
+            return redirect(url_for('view_kit', kitID=kitID))
+    
+    elif request.method == 'GET':
+        editKitForm.title.data = kit.title
+        editKitForm.kit_description.data = kit.kit_description
+        editKitForm.category.data = kit.category
+        editKitForm.tags.data = ', '.join([tag.tag for tag in kit.tags])
+    
+    return render_template('edit_kit.html', editKitForm=editKitForm)
 
 @app.route('/getusername')
 def getusername():

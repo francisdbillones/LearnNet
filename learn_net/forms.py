@@ -10,10 +10,15 @@ from learn_net.helpers import FILE_CATEGORIES
 # registration form
 class SignUpForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=5, max=30)])
+    
     email = StringField('Email', validators=[DataRequired(), Email()])
+    
     password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=100)])
+    
     confirm_password = PasswordField('Confirm password', validators=[DataRequired(), EqualTo('password')])
+    
     remember = BooleanField('Remember me')
+    
     submit = SubmitField('Sign up')
     
     # check if username is not taken
@@ -30,8 +35,11 @@ class SignUpForm(FlaskForm):
 # log in form
 class SignInForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
+    
     password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=100)])
+    
     remember = BooleanField('Remember me')
+    
     submit = SubmitField('Sign in')
     
     # check if the user exists
@@ -42,8 +50,11 @@ class SignInForm(FlaskForm):
 # form to allow user to edit their profile information ex. change username or add a profile picture
 class UpdateAccountForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=5, max=30)])
+    
     email = StringField('Email', validators=[DataRequired(), Email()])
+    
     pfp_file = FileField('Profile picture', validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif'])])
+    
     submit = SubmitField('Update info')
     
     # check that the username isn't the same as the current username and the chosen username isn't taken
@@ -54,13 +65,30 @@ class UpdateAccountForm(FlaskForm):
 
 class CreateKitForm(FlaskForm):
     title = StringField('Title', description='Add a title.', validators=[DataRequired(), Length(min=5, max=30)])
+    
     kit_description = TextAreaField('Description', description='Describe this kit.', validators=[DataRequired(), Length(min=20)])
+    
     category = SelectField('Category', description='For what topic is this for?', choices=[
         'Language', 'Mathematics', 'Science', 'Health', 'Physical Education', 'Art', 'Music', 'Other'
     ])
+    
     tags = StringField('Tags', description='Add a few tags.', validators=[DataRequired(), Length(min=3, max=50)])
+    
     submit = SubmitField('Create kit')
 
+class EditKitForm(FlaskForm):
+    title = StringField('Title', description='Edit your title.', validators=[Length(min=5, max=30)])
+    
+    kit_description = TextAreaField('Description', description='Describe this kit.', validators=[Length(min=20)])
+    
+    category = SelectField('Category', description='For what topic is this for?', choices=[
+        'Language', 'Mathematics', 'Science', 'Health', 'Physical Education', 'Art', 'Music', 'Other'
+    ])
+    
+    tags = StringField('Tags', description='Add a few tags.', validators=[Length(min=3, max=50)])
+    
+    submit = SubmitField('Save changes')
+    
 # form for users to upload new articles (documents, slides, etc)
 class UploadKitFileForm(FlaskForm):
     file = FileField('File', validators=[FileAllowed([
