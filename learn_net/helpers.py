@@ -1,3 +1,4 @@
+from werkzeug.utils import secure_filename
 from learn_net import app
 from PIL import Image
 from flask_login import current_user
@@ -24,16 +25,28 @@ def delete_profile_picture(picture_file):
     path = os.path.join(app.root_path, 'static', 'images', 'profile_pictures', picture_file.filename)
     os.remove(path)
 
-def save_kit_file(file):
-    hexed_filename = secrets.token_hex(16)
-    extension = os.path.splitext(file.filename)[1]
-    filename = hexed_filename + extension
-    path = os.path.join(app.root_path, 'static', 'user_kits', filename)
+def create_kit_folder(kitID):
+    path = os.path.join(app.root_path, 'static', 'user_kits', str(kitID))
+    os.makedirs(path)
+
+def delete_kit_folder(kitID):
+    path = os.path.join(app.root_path, 'static', 'user_kits', str(kitID))
+    os.rmdir(path)
+
+def save_kit_file(kitID, file):
+    filename = secure_filename(file.filename)
+    path = os.path.join(app.root_path, 'static', 'user_kits', str(kitID), filename)
     
     file.save(path)
     
     return filename
 
+def delete_kit_file(kitID, file):
+    filename = secure_filename(file.filename)
+    path = os.path.join(app.root_path, 'static', 'user_kits', str(kitID), filename)
+    
+    os.remove(path)
+    
 FILE_CATEGORIES = [
     'Document',
     'Slideshow'
@@ -50,7 +63,7 @@ FILE_TYPES = {
     '.pptm': FILE_CATEGORIES[1]
 }
 
-def getFileType(file):
+def get_file_type(file):
     extension = os.path.splitext(file.filename)[1]
     return FILE_TYPES[extension]
     

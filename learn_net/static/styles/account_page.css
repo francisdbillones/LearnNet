@@ -1,11 +1,3 @@
-.content-section {
-    background: #ffffff;
-    padding: 10px 20px;
-    border: 1px solid #dddddd;
-    border-radius: 3px;
-    margin-bottom: 20px;
-}
-
 .account-img {
     height: 125px;
     width: 125px;
@@ -16,8 +8,4 @@
 .account-heading {
     font-size: 2.5rem;
     font-weight: bold;
-}
-
-#edit-button {
-    float: right;
 }

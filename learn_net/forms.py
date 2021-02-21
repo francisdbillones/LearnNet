@@ -1,9 +1,13 @@
 import secrets
-from wtforms.fields import StringField, PasswordField, SubmitField, BooleanField, SelectField, TextAreaField, RadioField
+
+from wtforms.fields import StringField, PasswordField, SubmitField, BooleanField, SelectField, TextAreaField, RadioField, FileField, MultipleFileField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileField, FileAllowed
+from flask_wtf.file import FileAllowed
+
 from flask_login import current_user
+
 from learn_net.models import User, Kit, KitTag
 from learn_net.helpers import FILE_CATEGORIES
 
@@ -89,13 +93,13 @@ class EditKitForm(FlaskForm):
     
     submit = SubmitField('Save changes')
     
-# form for users to upload new articles (documents, slides, etc)
-class UploadKitFileForm(FlaskForm):
-    file = FileField('File', validators=[FileAllowed([
+# form for users to upload new files to kit (documents, slides, etc.)
+class UploadKitFilesForm(FlaskForm):
+    files = MultipleFileField('Add more files', validators=[FileAllowed([
         'doc', 'docx', 'pdf', 'odt', # document formats
         'ppt', 'pptx', 'pptm' # slideshow formats
-    ])])
-    submit = SubmitField('Post')
+    ]), DataRequired()], description='You can upload up to 50 MB.')
+    submit = SubmitField('Upload')
 
 # simple form with text search only
 class SimpleSearchForm(FlaskForm):

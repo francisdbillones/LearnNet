@@ -65,27 +65,4 @@
         {{ updateAccountForm.submit(class='btn btn-outline-info') }}
     </form>
 </div>
-
-<!-- display users' uploads !-->
-
-<div class='content-section'>
-    <h2 class='account-heading'>Your uploads</h2>
-
-    {% for article in userArticles %}
-    <div class='separate-article'>
-        <a href='{{ url_for("article", article=article) }}'>
-            <h2 class='article-title'>{{ article.title }}</h2>
-        </a>
-        <div class='media-body'>
-            <div class='article-metadata'>
-                <span>
-                    <small class='text-muted'>Date uploaded: {{ article.date_uploaded.strftime('%Y-%m-%d') }}</small>
-                    <small class='text-muted'>Type: {{ article.file_type }}</small>
-                </span>
-                <p class='article-content'>{{ article.article_description }}</p>
-            </div>
-        </div>
-    </div>
-    {% endfor %}
-</div>
 {% endblock %}

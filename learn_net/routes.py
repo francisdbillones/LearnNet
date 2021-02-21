@@ -5,10 +5,11 @@ from learn_net.forms import *
 from learn_net.models import  User, Kit, KitFile, KitTag
 from learn_net import app, db, bcrypt, session
 
-from learn_net.helpers import save_profile_picture, save_kit_file, getFileType
+from learn_net.helpers import save_profile_picture, save_kit_file, get_file_type, create_kit_folder
+
+from datetime import datetime
 
 import secrets
-
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -105,6 +106,7 @@ def account(username):
     return render_template('account.html', profile_image=profile_image, updateAccountForm=updateAccountForm)
 
 @app.route('/<string:username>/edit', methods=['GET', 'POST'])
+@login_required
 def edit_account(username):
     # allow user to edit their account information
     
@@ -156,6 +158,7 @@ def browse():
     return render_template('browse.html', extendedSearchForm=extendedSearchForm)
 
 @app.route('/kits')
+@login_required
 def kits():
     # view user's kits, saved kits, favourited kits, etc.
     
@@ -164,6 +167,7 @@ def kits():
     return render_template('kits.html', userKits=userKits)
 
 @app.route('/kits/create', methods=['GET', 'POST'])
+@login_required
 def create_kit():
     # allow users to create kit
     
@@ -185,6 +189,8 @@ def create_kit():
         
         db.session.commit()
         
+        create_kit_folder(kit.id)
+        
         flash('Successfully created kit!', 'success')
         return redirect(url_for('kits'))
         
@@ -200,14 +206,31 @@ def view_kit(kitID):
         flash('That kit does not exist.', 'danger')
         return redirect(url_for('kits'))
     
-    return render_template('view_kit.html', kit=kit)    
+    uploadKitFilesForm = UploadKitFilesForm()
+    
+    if uploadKitFilesForm.validate_on_submit():
+        # check that the files the user uploaded doesn't exceed maximum number of files allowed
+        total_file_count = len(kit.files) + len(uploadKitFilesForm.files.data)
+        if total_file_count > app.config['MAX_KIT_FILE_COUNT']:
+            flash('A kit can only have a maximum of 10 files.', 'warning')
+            return redirect(url_for('kits'))
+        
+        for f in uploadKitFilesForm.files.data:
+            file = KitFile(filename=save_kit_file(kit.id, f), file_type = get_file_type(f), kit_id = kit.id)
+            db.session.add(file)
+        db.session.commit()
+        
+        flash('Your changes have been saved.', 'success')
+    
+    return render_template('view_kit.html', kit=kit, uploadKitFilesForm=uploadKitFilesForm)    
 
 @app.route('/kits/<int:kitID>/edit', methods=['GET', 'POST'])
+@login_required
 def edit_kit(kitID):
     kit = Kit.query.filter_by(id = kitID).first()
     if kit.owner.id != current_user.id:
         flash('You\'re not allowed to do that.', 'danger')
-        return redirect(url_for('kits', kitID=kitID))
+        return redirect(url_for('kits'))
 
     editKitForm = EditKitForm()
     if editKitForm.validate_on_submit():
@@ -225,8 +248,9 @@ def edit_kit(kitID):
             changed = True
         
         if editKitForm.tags.data:
+            existing_tags = [tag.tag for tag in kit.tags]
             for tag in editKitForm.tags.data.split(','):
-                if tag not in kit.tags:
+                if tag not in existing_tags:
                     new_tag = KitTag(kit_id = kit.id, tag = tag)
                     db.session.add(new_tag)
             changed = True

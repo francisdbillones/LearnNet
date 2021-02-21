@@ -47,6 +47,7 @@
                 {{ createKitForm.category.label(class='form=control-label') }}  
                 {% if createKitForm.category.errors %}
                   <!-- display errors !-->
+                    {{ createKitForm.category(class='form-control form-control-lg is-invalid', autocomplete='off') }}
                     {% for error in createKitForm.category.errors %}
                       <span class='text-danger'>{{ error }}</span> 
                     {% endfor %}
@@ -62,6 +63,7 @@
                 {{ createKitForm.tags.label(class='form=control-label') }} 
                 {% if createKitForm.tags.errors %}
                   <!-- display errors !-->
+                    {{ createKitForm.tags(class='form-control form-control-lg is-invalid', autocomplete='off') }}
                     {% for error in createKitForm.tags.errors %}
                       <span class='text-danger'>{{ error }}</span> 
                     {% endfor %}
