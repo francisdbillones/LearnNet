@@ -65,8 +65,58 @@ def signout():
     
     return redirect(url_for('index'))
 
-@app.route('/account', methods=['GET', 'POST'])
-def account():
+@app.route('/<string:username>', methods=['GET', 'POST'])
+def account(username):
+    # view account information
+    
+    user = User.query.filter_by(username=username).first()
+    
+    if not user:
+        flash('That user does not exist.', 'danger')
+        return redirect(url_for('index'))
+    
+    updateAccountForm = UpdateAccountForm()
+
+    if updateAccountForm.validate_on_submit():
+        changed = False
+        if current_user.username != updateAccountForm.username.data:
+            current_user.username = updateAccountForm.username.data
+            changed = True
+
+        if current_user.email != updateAccountForm.email.data:
+            current_user.email = updateAccountForm.email.data
+            changed = True
+
+        if updateAccountForm.pfp_file.data:
+            save_profile_picture(updateAccountForm.pfp_file.data)
+            changed = True
+
+        db.session.commit()
+
+        if changed:
+            flash('Your account has been updated.', 'info')
+
+    elif request.method == 'GET':
+        # pre-fill fields
+        updateAccountForm.username.data = current_user.username
+        updateAccountForm.email.data = current_user.email
+        
+    profile_image = url_for('static', filename=f'images/{ current_user.pfp_file }')
+    return render_template('account.html', profile_image=profile_image, updateAccountForm=updateAccountForm)
+
+@app.route('/<string:username>/edit', methods=['GET', 'POST'])
+def edit_account(username):
+    # allow user to edit their account information
+    
+    user = User.query.filter_by(username=username).first()
+    
+    if not user:
+        flash('That user does not exist.', 'danger')
+        return redirect(url_for('index'))
+    elif user.username != current_user.username:
+        flash('You are not allowed to do that.', 'danger')
+        return redirect(url_for('index'))
+    
     updateAccountForm = UpdateAccountForm()
 
     if updateAccountForm.validate_on_submit():
@@ -115,6 +165,8 @@ def kits():
 
 @app.route('/kits/create', methods=['GET', 'POST'])
 def create_kit():
+    # allow users to create kit
+    
     createKitForm = CreateKitForm()
     
     if createKitForm.validate_on_submit():
@@ -140,7 +192,13 @@ def create_kit():
 
 @app.route('/kits/<int:kitID>', methods=['GET', 'POST'])
 def view_kit(kitID):
+    # view kit information
+    
     kit = Kit.query.filter_by(id = kitID).first()
+    
+    if not kit:
+        flash('That kit does not exist.', 'danger')
+        return redirect(url_for('kits'))
     
     return render_template('view_kit.html', kit=kit)    
 
@@ -149,7 +207,7 @@ def edit_kit(kitID):
     kit = Kit.query.filter_by(id = kitID).first()
     if kit.owner.id != current_user.id:
         flash('You\'re not allowed to do that.', 'danger')
-        return redirect(url_for('index'))
+        return redirect(url_for('kits', kitID=kitID))
 
     editKitForm = EditKitForm()
     if editKitForm.validate_on_submit():

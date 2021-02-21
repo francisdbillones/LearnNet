@@ -39,7 +39,7 @@
             {% if current_user.is_authenticated %}
             <ul class='navbar-nav ml-auto mt-2'>
                 <li class='nav-item'><a class='nav-link' href='{{ url_for("kits") }}'>Your kits</a></li>
-                <li class='nav-item'><a class='nav-link' href='{{ url_for("account") }}'>Account</a></li>
+                <li class='nav-item'><a class='nav-link' href='{{ url_for("account", username=current_user.username) }}'>Account</a></li>
                 <li class='nav-item'><a class='nav-link' href='/signout'>Sign Out</a></li>
             </ul>
             {% else %}
