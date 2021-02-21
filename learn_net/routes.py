@@ -2,13 +2,14 @@ from flask import render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 
 from learn_net.forms import *
-from learn_net.models import ContentTag, User, Content
+from learn_net.models import  User, Kit, KitFile, KitTag
 from learn_net import app, db, bcrypt, session
 
-from learn_net.helpers import save_profile_picture, delete_profile_picture, save_content_file, getFileType
+from learn_net.helpers import save_profile_picture, save_kit_file, get_file_type, create_kit_folder
+
+from datetime import datetime
 
 import secrets
-
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -18,13 +19,13 @@ def index():
 def signup():
     # create a new user and sign in
     
-    form = SignUpForm()
-    if form.validate_on_submit():
+    signUpForm = SignUpForm()
+    if signUpForm.validate_on_submit():
         
         user = User(
-            username=form.username.data,
-            email=form.email.data,
-            password=bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+            username=signUpForm.username.data,
+            email=signUpForm.email.data,
+            password=bcrypt.generate_password_hash(signUpForm.password.data).decode('utf-8')
         )
 
         db.session.add(user)
@@ -34,25 +35,25 @@ def signup():
         flash('Account created!', 'success')
         
         return redirect(url_for('index'))
-    return render_template('signup.html', form=form)
+    return render_template('signup.html', signUpForm=signUpForm)
     
 @app.route("/signin", methods=['GET', 'POST'])
 def signin():
     # sign in user
     
-    form = SignInForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+    signInForm = SignInForm()
+    if signInForm.validate_on_submit():
+        user = User.query.filter_by(email=signInForm.email.data).first()
         
-        if bcrypt.check_password_hash(user.password, form.password.data):
-            login_user(user, remember=form.remember.data)
+        if bcrypt.check_password_hash(user.password, signInForm.password.data):
+            login_user(user, remember=signInForm.remember.data)
             
             next_page = request.args.get('next')
             flash('Successfully signed in!', 'success')
             return redirect(url_for('index')) if not next_page else redirect(next_page)
         else:
             flash('Error signing in. Check your password.', 'danger')
-    return render_template('signin.html', form=form)
+    return render_template('signin.html', signInForm=signInForm)
 
 @app.route('/signout')
 @login_required
@@ -65,68 +66,208 @@ def signout():
     
     return redirect(url_for('index'))
 
-@app.route('/account', methods=['GET', 'POST'])
-@login_required
-def account():
-    form = UpdateAccountForm()
+@app.route('/<string:username>', methods=['GET', 'POST'])
+def account(username):
+    # view account information
     
-    if form.validate_on_submit():
-        current_user.username = form.username.data
-        current_user.email = form.email.data
-        
-        if form.pfp_file.data:
-            delete_profile_picture(current_user.pfp_file)
-            current_user.pfp_file = save_profile_picture(form.pfp_file.data)
-        
+    user = User.query.filter_by(username=username).first()
+    
+    if not user:
+        flash('That user does not exist.', 'danger')
+        return redirect(url_for('index'))
+    
+    updateAccountForm = UpdateAccountForm()
+
+    if updateAccountForm.validate_on_submit():
+        changed = False
+        if current_user.username != updateAccountForm.username.data:
+            current_user.username = updateAccountForm.username.data
+            changed = True
+
+        if current_user.email != updateAccountForm.email.data:
+            current_user.email = updateAccountForm.email.data
+            changed = True
+
+        if updateAccountForm.pfp_file.data:
+            save_profile_picture(updateAccountForm.pfp_file.data)
+            changed = True
+
         db.session.commit()
-        flash('Your account has been updated!', 'success')
-        return redirect(url_for('account'))
-    
+
+        if changed:
+            flash('Your account has been updated.', 'info')
+
     elif request.method == 'GET':
         # pre-fill fields
-        form.username.data = current_user.username
-        form.email.data = current_user.email
+        updateAccountForm.username.data = current_user.username
+        updateAccountForm.email.data = current_user.email
         
     profile_image = url_for('static', filename=f'images/{ current_user.pfp_file }')
-    return render_template('account.html', profile_image=profile_image, form=form)
+    return render_template('account.html', profile_image=profile_image, updateAccountForm=updateAccountForm)
+
+@app.route('/<string:username>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_account(username):
+    # allow user to edit their account information
+    
+    user = User.query.filter_by(username=username).first()
+    
+    if not user:
+        flash('That user does not exist.', 'danger')
+        return redirect(url_for('index'))
+    elif user.username != current_user.username:
+        flash('You are not allowed to do that.', 'danger')
+        return redirect(url_for('index'))
+    
+    updateAccountForm = UpdateAccountForm()
+
+    if updateAccountForm.validate_on_submit():
+        changed = False
+        if current_user.username != updateAccountForm.username.data:
+            current_user.username = updateAccountForm.username.data
+            changed = True
+
+        if current_user.email != updateAccountForm.email.data:
+            current_user.email = updateAccountForm.email.data
+            changed = True
+
+        if updateAccountForm.pfp_file.data:
+            save_profile_picture(updateAccountForm.pfp_file.data)
+            changed = True
+
+        db.session.commit()
+
+        if changed:
+            flash('Your account has been updated.', 'info')
+
+    elif request.method == 'GET':
+        # pre-fill fields
+        updateAccountForm.username.data = current_user.username
+        updateAccountForm.email.data = current_user.email
+        
+    profile_image = url_for('static', filename=f'images/{ current_user.pfp_file }')
+    return render_template('account.html', profile_image=profile_image, updateAccountForm=updateAccountForm)
 
 @app.route('/browse', methods=['GET', 'POST'])
 def browse():
     # browse index
     # TODO browse route
     
-    flash('That page does not exist yet, sorry.', 'info')
-    return redirect(url_for('index'))
+    extendedSearchForm = ExtendedSearchForm()
+    
+    return render_template('browse.html', extendedSearchForm=extendedSearchForm)
 
-@app.route('/upload', methods=['GET', 'POST'])
+@app.route('/kits')
 @login_required
-def upload():
-    # upload new content
-    # TODO upload route
+def kits():
+    # view user's kits, saved kits, favourited kits, etc.
     
-    form = UploadContentForm()
+    userKits = Kit.query.filter_by(user_id = current_user.id)
     
-    if form.validate_on_submit():
-        content = Content(
-            author = current_user,
-            title = form.title.data,
-            school = form.school.data,
-            content_file = save_content_file(form.file.data),
-            file_type = getFileType(form.file.data)
-        )
-        db.session.add(content)
-        db.session.flush()
+    return render_template('kits.html', userKits=userKits)
 
-        tags = [tag.strip() for tag in form.tags.data.split()]
-        for tag in tags:
-            contentTag = ContentTag(tag=tag, content_id=content.id)
-            db.session.add(contentTag)
+@app.route('/kits/create', methods=['GET', 'POST'])
+@login_required
+def create_kit():
+    # allow users to create kit
+    
+    createKitForm = CreateKitForm()
+    
+    if createKitForm.validate_on_submit():
+        kit = Kit(
+            owner = current_user,
+            title = createKitForm.title.data,
+            kit_description = createKitForm.kit_description.data,
+            category = createKitForm.category.data
+        )
+        db.session.add(kit)
+        db.session.flush() # do this so that kit.id is generated without having to commit first
+        
+        for tag in createKitForm.tags.data.split(','):
+            kitTag = KitTag(tag = tag, kit_id = kit.id)
+            db.session.add(kitTag)
         
         db.session.commit()
         
-        flash('Uploaded!', 'success')
-        return redirect(url_for('index'))
-    return render_template('upload.html', form=form)
+        create_kit_folder(kit.id)
+        
+        flash('Successfully created kit!', 'success')
+        return redirect(url_for('kits'))
+        
+    return render_template('create_kit.html', createKitForm=createKitForm)
+
+@app.route('/kits/<int:kitID>', methods=['GET', 'POST'])
+def view_kit(kitID):
+    # view kit information
+    
+    kit = Kit.query.filter_by(id = kitID).first()
+    
+    if not kit:
+        flash('That kit does not exist.', 'danger')
+        return redirect(url_for('kits'))
+    
+    uploadKitFilesForm = UploadKitFilesForm()
+    
+    if uploadKitFilesForm.validate_on_submit():
+        # check that the files the user uploaded doesn't exceed maximum number of files allowed
+        total_file_count = len(kit.files) + len(uploadKitFilesForm.files.data)
+        if total_file_count > app.config['MAX_KIT_FILE_COUNT']:
+            flash('A kit can only have a maximum of 10 files.', 'warning')
+            return redirect(url_for('kits'))
+        
+        for f in uploadKitFilesForm.files.data:
+            file = KitFile(filename=save_kit_file(kit.id, f), file_type = get_file_type(f), kit_id = kit.id)
+            db.session.add(file)
+        db.session.commit()
+        
+        flash('Your changes have been saved.', 'success')
+    
+    return render_template('view_kit.html', kit=kit, uploadKitFilesForm=uploadKitFilesForm)    
+
+@app.route('/kits/<int:kitID>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_kit(kitID):
+    kit = Kit.query.filter_by(id = kitID).first()
+    if kit.owner.id != current_user.id:
+        flash('You\'re not allowed to do that.', 'danger')
+        return redirect(url_for('kits'))
+
+    editKitForm = EditKitForm()
+    if editKitForm.validate_on_submit():
+        
+        if editKitForm.title.data:
+            kit.title = editKitForm.title.data
+            changed = True
+        
+        if editKitForm.kit_description.data:
+            kit.kit_description = editKitForm.kit_description.data
+            changed = True
+        
+        if editKitForm.category.data:
+            kit.category = editKitForm.category.data
+            changed = True
+        
+        if editKitForm.tags.data:
+            existing_tags = [tag.tag for tag in kit.tags]
+            for tag in editKitForm.tags.data.split(','):
+                if tag not in existing_tags:
+                    new_tag = KitTag(kit_id = kit.id, tag = tag)
+                    db.session.add(new_tag)
+            changed = True
+        
+        db.session.commit()
+        
+        if changed:
+            flash('Changes saved.', 'success')
+            return redirect(url_for('view_kit', kitID=kitID))
+    
+    elif request.method == 'GET':
+        editKitForm.title.data = kit.title
+        editKitForm.kit_description.data = kit.kit_description
+        editKitForm.category.data = kit.category
+        editKitForm.tags.data = ', '.join([tag.tag for tag in kit.tags])
+    
+    return render_template('edit_kit.html', editKitForm=editKitForm)
 
 @app.route('/getusername')
 def getusername():

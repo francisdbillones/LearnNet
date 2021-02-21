@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+{% block head %}{% endblock %}
+{% block title %}Browse{% endblock %}
+
+{% block main %}
+    <div class='content-section'>
+    <h2 class='account-heading'>Browse</h2>
+
+    <form action='' method='GET'>
+        <div class='form-group'>
+            {{ extendedSearchForm.sort_by.label(class='form=control-label') }} 
+
+            {% if extendedSearchForm.sort_by.errors %}
+                <!-- display errors !-->
+                {{ extendedSearchForm.sort_by(class='form-control form-control-lg is-invalid', autocomplete='off', autofocus=true) }}
+                <div class='invalid-feedback'>
+                    {% for error in extendedSearchForm.sort_by.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+            {% else %}
+                {{ extendedSearchForm.sort_by(class='form-control form-control-lg', autocomplete='off', autofocus=true) }}
+            {% endif %}
+        </div>
+
+        <div class='form-group'>
+            {{ extendedSearchForm.query.label(class='form=control-label') }} 
+
+            {% if extendedSearchForm.query.errors %}
+                <!-- display errors !-->
+                {{ extendedSearchForm.query(class='form-control form-control-lg is-invalid', autocomplete='off', autofocus=true) }}
+                <div class='invalid-feedback'>
+                    {% for error in extendedSearchForm.query.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+            {% else %}
+                {{ extendedSearchForm.query(class='form-control form-control-lg', autocomplete='off', autofocus=true) }}
+            {% endif %}
+        </div>
+
+    </form>
+
+    {% for article in results %}
+    <div class='separate-article'>
+        <a href='{{ url_for("article", article=article) }}'>
+            <h2 class='article-title'>{{ article.title }}</h2>
+        </a>
+        <div class='media-body'>
+            <div class='article-metadata'>
+                <span>
+                    <small class='text-muted'>Date uploaded: {{ article.date_uploaded.strftime('%Y-%m-%d') }}</small>
+                    <small class='text-muted'>Type: {{ article.file_type }}</small>
+                </span>
+                <p class='article-content'>{{ article.article_description }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

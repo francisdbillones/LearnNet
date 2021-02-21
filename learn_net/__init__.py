@@ -24,6 +24,12 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 # set session type
 app.config['SESSION_TYPE'] = 'filesystem'
 
+# set maximum file size that a user can upload
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024; # 50 MB
+
+# set maximum number of files a kit can have
+app.config['MAX_KIT_FILE_COUNT'] = 10
+
 Session(app)
 
 

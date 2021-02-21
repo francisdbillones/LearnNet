@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+{% block title %} View kits {% endblock %}
+
+{% block main %}
+<div class='content-section'>
+    <h2 class='account-heading'>Your kits</h2>
+    
+    {% for kit in userKits %}
+        <article class='media content-section'>
+          <a href='{{ url_for("account", username=kit.owner.username) }}'>
+            <img class='rounded-circle article-img' src='{{ url_for("static", filename="/images/profile_pictures/" + kit.owner.pfp_file) }}' height='50px'>
+          </a>
+          <div class='media-body'>
+            <div class='article-metadata'>
+              <a class='mr-2' href='{{ url_for("account", username=kit.owner.username) }}'>{{ kit.owner.username }}</a>
+              <small class='text-muted'>{{ kit.category }}</small>
+              {% for tag in kit.tags %}
+              <span class='badge badge-pill badge-primary'>{{ tag.tag }}</span>
+              {% endfor %}
+            </div>
+            <h2><a class='article-title' href='{{ url_for("view_kit", kitID=kit.id) }}'>{{ kit.title }}</a></h2>
+          </div>
+        </article>
+    {% endfor %}
+</div>
+{% endblock %}

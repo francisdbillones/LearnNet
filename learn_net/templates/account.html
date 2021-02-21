@@ -2,7 +2,9 @@
 {% block head %}
 <link href='{{ url_for("static", filename="styles/account_page.css") }}' type='text/css' rel='stylesheet'> 
 {% endblock %} 
-{% block title %}Account{% endblock %} {% block main %}
+{% block title %}Account{% endblock %} 
+
+{% block main %}
 <div class='content-section'>
     <div class='media'>
         <img alt='profile picture' class='rounded-circle account-img' src='{{ url_for("static", filename="images/profile_pictures/" + current_user.pfp_file) }}'>
@@ -12,51 +14,55 @@
         </div>
     </div>
     <form action='' method='POST' enctype='multipart/form-data'>
-        {{ form.hidden_tag() }}
+        {{ updateAccountForm.hidden_tag() }}
         <fieldset class='form-group'>
             <legend class='border-bottom mb-4'>Account details</legend>
             <div class='form-group'>
-                {{ form.username.label(class='form=control-label') }} 
-                {% if form.username.errors %}
-                  <!-- display errors !-->
-                  {{ form.username(class='form-control form-control-lg is-invalid', autocomplete='off') }}
-                  <div class='invalid-feedback'>
-                      {% for error in form.username.errors %}
-                      <span>{{ error }}</span> {% endfor %}
-                  </div>
-
-                {% else %} 
-                  {{ form.username(class='form-control form-control-lg', autocomplete='off', autofocus=true) }} 
-                {% endif %}
-            </div>
-
-            <div class='form-group'>
-                {{ form.email.label(class='form=control-label') }} 
-                {% if form.email.errors %}
+                {{ updateAccountForm.username.label(class='form=control-label') }} 
+                
+                {% if updateAccountForm.username.errors %}
                     <!-- display errors !-->
-                    {{ form.email(class='form-control form-control-lg is-invalid', autocomplete='off') }}
+                    {{ updateAccountForm.username(class='form-control form-control-lg is-invalid', autocomplete='off') }}
                     <div class='invalid-feedback'>
-                        {% for error in form.email.errors %}
+                        {% for error in updateAccountForm.username.errors %}
                             <span>{{ error }}</span> 
                         {% endfor %}
                     </div>
 
                 {% else %} 
-                  {{ form.email(class='form-control form-control-lg', autocomplete='off') }} 
+                    {{ updateAccountForm.username(class='form-control form-control-lg', autocomplete='off', autofocus=true) }} 
+                {% endif %}
+            </div>
+
+            <div class='form-group'>
+                {{ updateAccountForm.email.label(class='form=control-label') }} 
+                {% if updateAccountForm.email.errors %}
+                    <!-- display errors !-->
+                    {{ updateAccountForm.email(class='form-control form-control-lg is-invalid', autocomplete='off') }}
+                    <div class='invalid-feedback'>
+                        {% for error in updateAccountForm.email.errors %}
+                            <span>{{ error }}</span> 
+                        {% endfor %}
+                    </div>
+
+                {% else %} 
+                    {{ updateAccountForm.email(class='form-control form-control-lg', autocomplete='off') }} 
                 {% endif %}
             </div>
             <div class='form-group'>
-                {{ form.pfp_file.label(class='form=control-label') }} 
-                {{ form.pfp_file(class='form-control form-control-lg', autocomplete='off') }} 
-                {% if form.pfp_file.errors %}
-                  <!-- display errors !-->
-                    {% for error in form.pfp_file.errors %}
-                      <span class='text-danger'>{{ error }}</span> 
+                {{ updateAccountForm.pfp_file.label(class='form=control-label') }} 
+                {% if updateAccountForm.pfp_file.errors %}
+                    <!-- display errors !-->
+                    {% for error in updateAccountForm.pfp_file.errors %}
+                        <span class='text-danger'>{{ error }}</span> 
                     {% endfor %}
+
+                {% else %} 
+                    {{ updateAccountForm.pfp_file(class='form-control form-control-lg', autocomplete='off') }} 
                 {% endif %}
             </div>
         </fieldset>
-        {{ form.submit(class='btn btn-outline-info') }}
+        {{ updateAccountForm.submit(class='btn btn-outline-info') }}
     </form>
 </div>
 {% endblock %}

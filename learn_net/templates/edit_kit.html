@@ -1,0 +1,74 @@
+{% extends 'layout.html' %} 
+{% block head %}
+<link href='{{ url_for("static", filename="styles/account_page.css") }}' type='text/css' rel='stylesheet'> 
+{% endblock %} 
+{% block title %} View kit {% endblock %} 
+
+{% block main %}
+<div class='content-section'>
+    <form action='' method='POST'>
+        {{ editKitForm.hidden_tag() }}
+        <fieldset class='form-group'>
+            <legend class='border-bottom mb-4'>Kit details</legend>
+            <div class='form-group'>
+                {{ editKitForm.title.label(class='form=control-label')}} 
+                
+                {% if editKitForm.title.errors %}
+                    <!-- display errors !-->
+                    {{ editKitForm.title(class='form-control form-control-lg is-invalid', autocomplete='off') }}
+                    <div class='invalid-feedback'>
+                        {% for error in editKitForm.title.errors %}
+                            <span>{{ error }}</span> 
+                        {% endfor %}
+                    </div>
+
+                {% else %} 
+                    {{ editKitForm.title(class='form-control form-control-lg', autocomplete='off', autofocus=true) }} 
+                {% endif %}
+            </div>
+
+            <div class='form-group'>
+                {{ editKitForm.kit_description.label(class='form=control-label') }} 
+                {% if editKitForm.kit_description.errors %}
+                    <!-- display errors !-->
+                    {{ editKitForm.kit_description(class='form-control form-control-lg is-invalid', autocomplete='off') }}
+                    <div class='invalid-feedback'>
+                        {% for error in editKitForm.kit_description.errors %}
+                            <span>{{ error }}</span> 
+                        {% endfor %}
+                    </div>
+
+                {% else %} 
+                    {{ editKitForm.kit_description(class='form-control form-control-lg', autocomplete='off') }} 
+                {% endif %}
+            </div>
+            <div class='form-group'>
+                {{ editKitForm.category.label(class='form=control-label') }} 
+                {% if editKitForm.category.errors %}
+                    <!-- display errors !-->
+                    {% for error in editKitForm.category.errors %}
+                        <span class='text-danger'>{{ error }}</span> 
+                    {% endfor %}
+
+                {% else %} 
+                    {{ editKitForm.category(class='form-control form-control-lg', autocomplete='off') }} 
+                {% endif %}
+            </div>
+            <div class='form-group'>
+                {{ editKitForm.tags.label(class='form=control-label') }} 
+                {% if editKitForm.tags.errors %}
+                    <!-- display errors !-->
+                    {% for error in editKitForm.tags.errors %}
+                        <span class='text-danger'>{{ error }}</span> 
+                    {% endfor %}
+
+                {% else %} 
+                    {{ editKitForm.tags(class='form-control form-control-lg', autocomplete='off') }} 
+                {% endif %}
+            </div>
+        </fieldset>
+        {{ editKitForm.submit(class='btn btn-outline-info') }}
+    </form>
+</div>
+</div>
+{% endblock %}

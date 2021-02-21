@@ -10,6 +10,15 @@ html {
     margin: 5%;
 }
 
+.content-section {
+    width: 100%;
+    background: #ffffff;
+    padding: 10px 20px;
+    border: 1px solid #dddddd;
+    border-radius: 3px;
+    margin-bottom: 20px;
+}
+
 
 /* navbar effects to be dramatic ;) */
 

@@ -1,17 +1,28 @@
-from wtforms.fields import StringField, PasswordField, SubmitField, BooleanField, SelectField
+import secrets
+
+from wtforms.fields import StringField, PasswordField, SubmitField, BooleanField, SelectField, TextAreaField, RadioField, FileField, MultipleFileField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileField, FileAllowed
+from flask_wtf.file import FileAllowed
+
 from flask_login import current_user
-from learn_net.models import User
+
+from learn_net.models import User, Kit, KitTag
+from learn_net.helpers import FILE_CATEGORIES
 
 # registration form
 class SignUpForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=5, max=30)])
+    
     email = StringField('Email', validators=[DataRequired(), Email()])
+    
     password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=100)])
+    
     confirm_password = PasswordField('Confirm password', validators=[DataRequired(), EqualTo('password')])
+    
     remember = BooleanField('Remember me')
+    
     submit = SubmitField('Sign up')
     
     # check if username is not taken
@@ -28,8 +39,11 @@ class SignUpForm(FlaskForm):
 # log in form
 class SignInForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
+    
     password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=100)])
+    
     remember = BooleanField('Remember me')
+    
     submit = SubmitField('Sign in')
     
     # check if the user exists
@@ -40,8 +54,11 @@ class SignInForm(FlaskForm):
 # form to allow user to edit their profile information ex. change username or add a profile picture
 class UpdateAccountForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=5, max=30)])
+    
     email = StringField('Email', validators=[DataRequired(), Email()])
+    
     pfp_file = FileField('Profile picture', validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif'])])
+    
     submit = SubmitField('Update info')
     
     # check that the username isn't the same as the current username and the chosen username isn't taken
@@ -50,16 +67,51 @@ class UpdateAccountForm(FlaskForm):
             if User.query.filter_by(username=username.data).first():
                 raise ValidationError('That username is taken. Please choose a different one.')  
 
-# form for users to upload new content (documents, slides, etc)
-class UploadContentForm(FlaskForm):
+class CreateKitForm(FlaskForm):
     title = StringField('Title', description='Add a title.', validators=[DataRequired(), Length(min=5, max=30)])
-    file = FileField('File', validators=[FileAllowed([
-        'doc', 'docx', 'pdf', 'odt', # document formats
-        'ppt', 'pptx', 'pptm' # slideshow formats
-    ])])
-    school = StringField('School', description="From what school is this from? If you don't set anything, it'll be your school by default.")
+    
+    kit_description = TextAreaField('Description', description='Describe this kit.', validators=[DataRequired(), Length(min=20)])
+    
     category = SelectField('Category', description='For what topic is this for?', choices=[
         'Language', 'Mathematics', 'Science', 'Health', 'Physical Education', 'Art', 'Music', 'Other'
     ])
-    tags = StringField('Tags', description='Tags provide unique identification. Add some so that others can search for your uploads easier.')
-    submit = SubmitField('Post')
+    
+    tags = StringField('Tags', description='Add a few tags.', validators=[DataRequired(), Length(min=3, max=50)])
+    
+    submit = SubmitField('Create kit')
+
+class EditKitForm(FlaskForm):
+    title = StringField('Title', description='Edit your title.', validators=[Length(min=5, max=30)])
+    
+    kit_description = TextAreaField('Description', description='Describe this kit.', validators=[Length(min=20)])
+    
+    category = SelectField('Category', description='For what topic is this for?', choices=[
+        'Language', 'Mathematics', 'Science', 'Health', 'Physical Education', 'Art', 'Music', 'Other'
+    ])
+    
+    tags = StringField('Tags', description='Add a few tags.', validators=[Length(min=3, max=50)])
+    
+    submit = SubmitField('Save changes')
+    
+# form for users to upload new files to kit (documents, slides, etc.)
+class UploadKitFilesForm(FlaskForm):
+    files = MultipleFileField('Add more files', validators=[FileAllowed([
+        'doc', 'docx', 'pdf', 'odt', # document formats
+        'ppt', 'pptx', 'pptm' # slideshow formats
+    ]), DataRequired()], description='You can upload up to 50 MB.')
+    submit = SubmitField('Upload')
+
+# simple form with text search only
+class SimpleSearchForm(FlaskForm):
+    query = StringField('Search query', validators=[DataRequired(), Length(min=5, max=100)])
+    submit = SubmitField('Search')
+
+# form for users to search + filter
+class ExtendedSearchForm(FlaskForm):
+    query = StringField('Search', validators=[DataRequired(), Length(min=5, max=100)])
+    sort_by = RadioField('Sort by', choices=[
+        'Relevancy', 'Recency'
+    ])
+    school = StringField('School', validators=[Length(min=2, max=50)])
+    file_type = RadioField('File type', choices=[FILE_CATEGORIES])
+    submit = SubmitField('Search')

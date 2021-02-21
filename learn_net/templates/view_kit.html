@@ -1,0 +1,44 @@
+{% extends 'layout.html' %} 
+{% block head %}
+<link href='{{ url_for('static', filename='styles/account_page.css') }}' type='text/css' rel='stylesheet'>
+<script src='{{ url_for('static', filename='scripts/edit_button.js') }}'></script>
+{% endblock %} 
+{% block title %} View kit {% endblock %} 
+
+{% block main %}
+<div class='content-section'>
+    <legend class='border-bottom mb-4'>
+        {{ kit.title }}
+        <button type='button' class='btn btn-outline-primary' id='edit-button'>Edit</button>
+    </legend>
+    <small>
+        <div>{{ kit.category }}</div>
+        {% for tag in kit.tags %}
+        <span class='badge badge-primary'>{{ tag.tag }}</span>
+        {% endfor %}
+    </small>
+
+    <p> {{ kit.kit_description }} </p>
+
+    <form action='' method='POST' enctype='multipart/form-data'>
+        {{ uploadKitFilesForm.hidden_tag() }}
+        <div class='form-group'>
+            {{ uploadKitFilesForm.files.label(class='form=control-label') }} 
+            {% if uploadKitFilesForm.files.errors %}
+                <!-- display errors !-->
+                {{ uploadKitFilesForm.files(class='form-control form-control-lg is-invalid', autocomplete='off') }}
+                {% for error in uploadKitFilesForm.files.errors %}
+                    <span class='text-danger'>{{ error }}</span> 
+                {% endfor %}
+            {% else %} 
+                {{ uploadKitFilesForm.files(class='form-control form-control-lg', autocomplete='off') }} 
+                <small class='text-muted'>
+                    {{ uploadKitFilesForm.files.description }}
+                </small>
+            {% endif %}
+        </div>
+        {{ uploadKitFilesForm.submit(class='btn btn-outline-info') }}
+    </form>
+</div>
+</div>
+{% endblock %}

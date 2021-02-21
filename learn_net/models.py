@@ -15,29 +15,34 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(60), nullable=False)
     pfp_file = db.Column(db.String(30), nullable=False, default='default.jpg') # NOT AN ACTUAL IMAGE. just the image file name
     school = db.Column(db.String(30), nullable=True)
-    uploads = db.relationship('Content', backref='author', lazy=True)
+    kits = db.relationship('Kit', backref='owner', lazy=True)
     
     def __repr__(self):
         return f"User('{self.username}', '{self.email}', '{self.pfp_file}')"
 
-class ContentTag(db.Model):
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
-    content_id = db.Column(db.Integer, db.ForeignKey('content.id'), nullable=False)
-    tag = db.Column(db.String(20))
-
-# content that users can see, upload, and use
-class Content(db.Model):
+class Kit(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    date_uploaded = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.now())
     title = db.Column(db.String(30), unique=False, nullable=False)
-    school = db.Column(db.String(30), unique=False, nullable=True)   
-    content_file = db.Column(db.String(20), unique=False, nullable=False)
-    file_type = db.Column(db.String(20), unique=False, nullable=False)
-    tags = db.relationship('ContentTag', backref='content_tagged', lazy=True)
+    kit_description = db.Column(db.Text, unique=False, nullable=False)
+    category = db.Column(db.String(20), unique=False, nullable=False)
+    files = db.relationship('KitFile', backref='kit', lazy=True)
+    tags = db.relationship('KitTag', backref='kit_tagged', lazy=True)
     
     def __repr__(self):
-        return f"Content('{self.title}', '{self.date_uploaded}')"
+        return f"Kit(`{self.title}`, {self.kit_description}`)"
+
+class KitTag(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    kit_id = db.Column(db.Integer, db.ForeignKey('kit.id'), nullable=False)
+    tag = db.Column(db.String(20))
+
+class KitFile(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    filename = db.Column(db.String(30), unique=False, nullable=False)
+    file_type = db.Column(db.String(20), unique=False, nullable=False)
+    date_uploaded = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.now())
+    kit_id = db.Column(db.Integer, db.ForeignKey('kit.id'), nullable=False)
     
     
     
