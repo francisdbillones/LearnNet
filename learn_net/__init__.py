@@ -36,15 +36,15 @@ Session(app)
 
 # create images folder
 images_path = os.path.join(app.root_path, 'learn_net', 'static', 'images')
-if not os.path.isdir(images_path):
+if not os.path.exists(images_path):
+    os.makedirs(images_path)
     # create profile_pictures folder
     profile_pictures_path = os.path.join(app.root_path, images_path, 'profile_picutres')
     if not os.path.isdir(profile_pictures_path):
         os.makedirs(profile_pictures_path)
-    os.makedirs(images_path)
 
 # create user_kits folder
-user_kits_path = os.path.join(app.root_path, 'learn_net', 'static', 'user_kits')
+user_kits_path = os.path.exists(app.root_path, 'learn_net', 'static', 'user_kits')
 if not os.path.isdir(user_kits_path):
     os.makedirs(user_kits_path)
 

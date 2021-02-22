@@ -17,7 +17,7 @@ def index():
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    # create a new user and sign in
+    # create a new user, then sign them in
     
     signUpForm = SignUpForm()
     if signUpForm.validate_on_submit():
