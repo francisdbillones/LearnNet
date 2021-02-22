@@ -5,11 +5,13 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 
 import secrets
+import os
 
 # Configure application
 app = Flask(__name__)
 app.config['SECRET_KEY'] = secrets.token_hex(256)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
@@ -32,6 +34,11 @@ app.config['MAX_KIT_FILE_COUNT'] = 10
 
 Session(app)
 
+# create images folder
+images_path = os.path.join(app.root_path, 'learn_net', 'static', 'images')
+if not os.path.isdir(image_path):
+    # create profile_pictures folder
+    if not os.path.isdir
 
 # Ensure responses aren't cached
 @app.after_request

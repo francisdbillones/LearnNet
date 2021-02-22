@@ -96,6 +96,9 @@ def account(username):
 
         if changed:
             flash('Your account has been updated.', 'info')
+            
+            # do this to update the route
+            return redirect(url_for('account', username=user.username))
 
     elif request.method == 'GET':
         # pre-fill fields
