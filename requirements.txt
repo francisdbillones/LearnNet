@@ -23,6 +23,7 @@ Jinja2==2.11.3
 MarkupSafe==1.1.1
 passlib==1.7.4
 Pillow==8.1.0
+psycopg2-binary==2.8.6
 py==1.4.22
 pycparser==2.20
 pytest==2.6.0
