@@ -1,6 +1,9 @@
 # visual studio code
 .vscode
 
+# heroku
+Procfile
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
