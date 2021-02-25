@@ -27,11 +27,14 @@ def delete_profile_picture(picture_file):
 
 def create_kit_folder(kitID):
     path = os.path.join(app.root_path, 'static', 'user_kits', str(kitID))
-    os.makedirs(path)
+    
+    if not os.path.exists(path):
+        os.makedirs(path)
 
 def delete_kit_folder(kitID):
     path = os.path.join(app.root_path, 'static', 'user_kits', str(kitID))
-    os.rmdir(path)
+    if os.path.exists(path):
+        os.rmdir(path)
 
 def save_kit_file(kitID, file):
     filename = secure_filename(file.filename)

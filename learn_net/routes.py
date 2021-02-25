@@ -73,7 +73,7 @@ def account(username):
     user = User.query.filter_by(username=username).first()
     
     if not user:
-        flash('That user does not exist.', 'danger')
+        flash('That page does not exist.', 'danger')
         return redirect(url_for('index'))
     
     updateAccountForm = UpdateAccountForm()
@@ -237,6 +237,7 @@ def edit_kit(kitID):
 
     editKitForm = EditKitForm()
     if editKitForm.validate_on_submit():
+        changed = False
         
         if editKitForm.title.data:
             kit.title = editKitForm.title.data
@@ -251,11 +252,12 @@ def edit_kit(kitID):
             changed = True
         
         if editKitForm.tags.data:
-            existing_tags = [tag.tag for tag in kit.tags]
+            for tag in kit.tags:
+                db.session.delete(tag)
             for tag in editKitForm.tags.data.split(','):
-                if tag not in existing_tags:
-                    new_tag = KitTag(kit_id = kit.id, tag = tag)
-                    db.session.add(new_tag)
+                new_tag = KitTag(tag = tag, kit_id = kit.id)
+                db.session.add(new_tag)
+                print(new_tag.tag)
             changed = True
         
         db.session.commit()

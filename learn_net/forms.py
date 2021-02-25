@@ -76,7 +76,7 @@ class CreateKitForm(FlaskForm):
         'Language', 'Mathematics', 'Science', 'Health', 'Physical Education', 'Art', 'Music', 'Other'
     ])
     
-    tags = StringField('Tags', description='Add a few tags.', validators=[DataRequired(), Length(min=3, max=50)])
+    tags = StringField('Tags', description='Add a few tags.', validators=[DataRequired(), Length(min=3, max=50)]) 
     
     submit = SubmitField('Create kit')
 
@@ -89,7 +89,7 @@ class EditKitForm(FlaskForm):
         'Language', 'Mathematics', 'Science', 'Health', 'Physical Education', 'Art', 'Music', 'Other'
     ])
     
-    tags = StringField('Tags', description='Add a few tags.', validators=[Length(min=3, max=50)])
+    tags = StringField('Tags', description='Add a few tags. Separate tags with commas.', validators=[Length(min=3, max=50)])
     
     submit = SubmitField('Save changes')
     

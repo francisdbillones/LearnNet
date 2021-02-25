@@ -4,6 +4,10 @@
 {% endblock %} 
 {% block title %} View kit {% endblock %} 
 
+{% block body %}
+<button type='button' class='btn btn-outline-primary ml-2 mt-2' onclick='window.history.back()'>Go back</button>
+{% endblock %}
+
 {% block main %}
 <div class='content-section'>
     <form action='' method='POST'>
@@ -39,7 +43,7 @@
                     </div>
 
                 {% else %} 
-                    {{ editKitForm.kit_description(class='form-control form-control-lg', autocomplete='off') }} 
+                    {{ editKitForm.kit_description(class='form-control form-control-lg', autocomplete='off') }}
                 {% endif %}
             </div>
             <div class='form-group'>
