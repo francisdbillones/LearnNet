@@ -81,7 +81,7 @@ class CreateKitForm(FlaskForm):
     submit = SubmitField('Create kit')
     
     def validate_tags(self, tags):
-        for tag in tags.split(','):
+        for tag in tags.data.split(','):
             if len(tag) > 20:
                 raise ValidationError('That tag is too long.')
 
