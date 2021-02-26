@@ -51,7 +51,7 @@ def signin():
             next_page = request.args.get('next')
             flash('Successfully signed in!', 'success')
             
-            if request.arg.get('next'):
+            if request.args.get('next'):
                 return redirect(request.args.get('next'))
             return redirect(url_for('index'))
         else:
