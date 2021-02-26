@@ -50,7 +50,10 @@ def signin():
             
             next_page = request.args.get('next')
             flash('Successfully signed in!', 'success')
-            return redirect(url_for('index')) if not next_page else redirect(next_page)
+            
+            if request.arg.get('next'):
+                return redirect(request.args.get('next'))
+            return redirect(url_for('index'))
         else:
             flash('Error signing in. Check your password.', 'danger')
     return render_template('signin.html', signInForm=signInForm)
@@ -207,7 +210,7 @@ def view_kit(kitID):
     
     if not kit:
         flash('That kit does not exist.', 'danger')
-        return redirect(url_for('kits'))
+        return redirect(url_for('index'))
     
     uploadKitFilesForm = UploadKitFilesForm()
     
@@ -233,7 +236,7 @@ def edit_kit(kitID):
     kit = Kit.query.filter_by(id = kitID).first()
     if kit.owner.id != current_user.id:
         flash('You\'re not allowed to do that.', 'danger')
-        return redirect(url_for('kits'))
+        return redirect(request.referrer)
 
     editKitForm = EditKitForm()
     if editKitForm.validate_on_submit():
@@ -257,7 +260,6 @@ def edit_kit(kitID):
             for tag in editKitForm.tags.data.split(','):
                 new_tag = KitTag(tag = tag, kit_id = kit.id)
                 db.session.add(new_tag)
-                print(new_tag.tag)
             changed = True
         
         db.session.commit()
@@ -273,6 +275,31 @@ def edit_kit(kitID):
         editKitForm.tags.data = ', '.join([tag.tag for tag in kit.tags])
     
     return render_template('edit_kit.html', editKitForm=editKitForm)
+
+@app.route('/kits/<int:kitID>/delete', methods=['GET', 'POST'])
+@login_required
+def delete_kit(kitID):
+    kit = Kit.query.filter_by(id = kitID).first()
+    
+    if current_user.id != kit.owner.id:
+        flash('You\'re not allowed to do that.')
+        if request.referrer:
+            return redirect(request.referrer)
+        return redirect(url_for('kits'))
+    
+    if not kit:
+        return redirect(url_for('index'))
+    
+    for tag in kit.tags:
+        db.session.delete(tag)
+    
+    db.session.delete(kit)
+    db.session.commit()
+    
+    flash('Kit deleted successfully', 'success')
+    if request.referrer:
+        return redirect(request.referrer)
+    return redirect(url_for('kits'))
 
 @app.route('/getusername')
 def getusername():

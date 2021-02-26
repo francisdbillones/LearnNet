@@ -76,7 +76,7 @@ class CreateKitForm(FlaskForm):
         'Language', 'Mathematics', 'Science', 'Health', 'Physical Education', 'Art', 'Music', 'Other'
     ])
     
-    tags = StringField('Tags', description='Add a few tags.', validators=[DataRequired(), Length(min=3, max=50)]) 
+    tags = StringField('Tags', description='Add a few tags. Separate tags with commas.', validators=[DataRequired(), Length(min=3, max=50)]) 
     
     submit = SubmitField('Create kit')
 
@@ -92,7 +92,7 @@ class EditKitForm(FlaskForm):
     tags = StringField('Tags', description='Add a few tags. Separate tags with commas.', validators=[Length(min=3, max=50)])
     
     submit = SubmitField('Save changes')
-    
+
 # form for users to upload new files to kit (documents, slides, etc.)
 class UploadKitFilesForm(FlaskForm):
     files = MultipleFileField('Add more files', validators=[FileAllowed([

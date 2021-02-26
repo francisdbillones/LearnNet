@@ -7,7 +7,7 @@ import os
 
 def save_profile_picture(picture_file):
     if current_user.pfp_file == 'default.jpg':
-        hexed_filename = secrets.token_hex(16)
+        hexed_filename = secrets.token_hex(13)
         extension = os.path.splitext(picture_file.filename)[1]
         
         new_filename = hexed_filename + extension
