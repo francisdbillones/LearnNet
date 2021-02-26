@@ -40,7 +40,6 @@ class KitTag(db.Model):
 class KitFile(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     filename = db.Column(db.String(30), unique=False, nullable=False)
-    file_type = db.Column(db.String(20), unique=False, nullable=False)
     date_uploaded = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.now())
     kit_id = db.Column(db.Integer, db.ForeignKey('kit.id'), nullable=False)
     

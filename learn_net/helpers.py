@@ -50,23 +50,9 @@ def delete_kit_file(kitID, file):
     
     os.remove(path)
     
-FILE_CATEGORIES = [
-    'Document',
-    'Slideshow'
-]
-
-FILE_TYPES = {
-    '.doc': FILE_CATEGORIES[0],
-    '.docx': FILE_CATEGORIES[0],
-    '.pdf': FILE_CATEGORIES[0],
-    '.odt': FILE_CATEGORIES[0],
+def allowed_file(filename):
+    extension = os.path.splitext(filename)[1][1::]
     
-    '.ppt': FILE_CATEGORIES[1],
-    '.pptx': FILE_CATEGORIES[1],
-    '.pptm': FILE_CATEGORIES[1]
-}
+    return extension in app.config['ALLOWED_EXTENSIONS']
 
-def get_file_type(file):
-    extension = os.path.splitext(file.filename)[1]
-    return FILE_TYPES[extension]
     

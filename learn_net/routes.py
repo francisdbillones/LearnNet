@@ -1,15 +1,16 @@
-from flask import render_template, redirect, url_for, flash, request, jsonify
+from flask import render_template, redirect, url_for, flash, request, jsonify, send_from_directory
 from flask_login import login_user, logout_user, login_required, current_user
 
 from learn_net.forms import *
 from learn_net.models import  User, Kit, KitFile, KitTag
 from learn_net import app, db, bcrypt, session
 
-from learn_net.helpers import save_profile_picture, save_kit_file, get_file_type, create_kit_folder
+from learn_net.helpers import save_profile_picture, save_kit_file, create_kit_folder
 
 from datetime import datetime
 
 import secrets
+import os
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -211,7 +212,7 @@ def view_kit(kitID):
     kit = Kit.query.filter_by(id = kitID).first()
     
     if not kit:
-        flash('That kit does not exist.', 'danger')
+        flash('That page does not exist.', 'danger')
         return redirect(url_for('index'))
     
     uploadKitFilesForm = UploadKitFilesForm()
@@ -224,11 +225,14 @@ def view_kit(kitID):
             return redirect(url_for('kits'))
         
         for f in uploadKitFilesForm.files.data:
-            file = KitFile(filename=save_kit_file(kit.id, f), file_type = get_file_type(f), kit_id = kit.id)
+            file = KitFile(filename=save_kit_file(kit.id, f), kit_id = kit.id)
             db.session.add(file)
-        db.session.commit()
+        db.session.commit() 
         
         flash('Your changes have been saved.', 'success')
+        
+    for file in kit.files:
+        file.download_path = os.path.join(app.root_path, 'static', 'user_kits', str(kit.id), file.filename)
     
     return render_template('view_kit.html', kit=kit, uploadKitFilesForm=uploadKitFilesForm)    
 
@@ -264,6 +268,11 @@ def edit_kit(kitID):
                 db.session.add(new_tag)
             changed = True
         
+        if editKitForm.files.data:
+            for f in editKitForm.files.data:
+                file = KitFile(filename = save_kit_file(f), kit_id = kit.id)
+                db.session.add(file)
+            changed = True
         db.session.commit()
         
         if changed:
@@ -302,6 +311,17 @@ def delete_kit(kitID):
     if request.referrer:
         return redirect(request.referrer)
     return redirect(url_for('kits'))
+
+@app.route('/kits/<int:kitID>/download/<path:filename>')
+def download_kit_file(kitID, filename):
+    kit = Kit.query.filter_by(id = kitID).first()
+    if not kit or filename not in [file.filename for file in kit.files]:
+        flash('That page does not exist.', 'danger')
+        return redirect(url_for('kits'))
+
+    download_path = os.path.join(app.root_path, 'static', 'user_kits', str(kit.id))
+
+    return send_from_directory(directory=download_path, filename=filename, as_attachment=True)
 
 @app.route('/getusername')
 def getusername():

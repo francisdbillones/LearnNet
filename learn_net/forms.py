@@ -9,7 +9,7 @@ from flask_wtf.file import FileAllowed
 from flask_login import current_user
 
 from learn_net.models import User, Kit, KitTag
-from learn_net.helpers import FILE_CATEGORIES
+from learn_net.helpers import allowed_file
 
 # registration form
 class SignUpForm(FlaskForm):
@@ -105,11 +105,15 @@ class EditKitForm(FlaskForm):
 
 # form for users to upload new files to kit (documents, slides, etc.)
 class UploadKitFilesForm(FlaskForm):
-    files = MultipleFileField('Add more files', validators=[FileAllowed([
-        'doc', 'docx', 'pdf', 'odt', # document formats
-        'ppt', 'pptx', 'pptm' # slideshow formats
-    ]), DataRequired()], description='You can upload up to 50 MB.')
+    files = MultipleFileField('Add more files', validators=[DataRequired()], description='You can upload up to 50 MB.')
     submit = SubmitField('Upload')
+    
+    def validate_files(self, files):
+        for file in files.data:
+            if not allowed_file(file.filename):
+                raise ValidationError('That file type is not supported')
+            if len(file.filename) > 30:
+                raise ValidationError(f'The length of one of your file\'s names, particularly "{file.filename}", is too long.')
 
 # simple form with text search only
 class SimpleSearchForm(FlaskForm):
@@ -123,5 +127,4 @@ class ExtendedSearchForm(FlaskForm):
         'Relevancy', 'Recency'
     ])
     school = StringField('School', validators=[Length(min=2, max=50)])
-    file_type = RadioField('File type', choices=[FILE_CATEGORIES])
     submit = SubmitField('Search')
