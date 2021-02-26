@@ -61,8 +61,9 @@ class UpdateAccountForm(FlaskForm):
     
     submit = SubmitField('Update info')
     
-    # check that the username isn't the same as the current username and the chosen username isn't taken
+    # check that the username isn't taken
     def validate_username(self, username):
+        raise ValidationError('')
         if current_user.username != username.data:
             if User.query.filter_by(username=username.data).first():
                 raise ValidationError('That username is taken. Please choose a different one.')  
@@ -79,6 +80,11 @@ class CreateKitForm(FlaskForm):
     tags = StringField('Tags', description='Add a few tags. Separate tags with commas.', validators=[DataRequired(), Length(min=3, max=50)]) 
     
     submit = SubmitField('Create kit')
+    
+    def validate_tags(self, tags):
+        for tag in tags.split(','):
+            if len(tag) > 20:
+                raise ValidationError('That tag is too long.')
 
 class EditKitForm(FlaskForm):
     title = StringField('Title', description='Edit your title.', validators=[Length(min=5, max=30)])
@@ -92,6 +98,11 @@ class EditKitForm(FlaskForm):
     tags = StringField('Tags', description='Add a few tags. Separate tags with commas.', validators=[Length(min=3, max=50)])
     
     submit = SubmitField('Save changes')
+    
+    def validate_tags(self, tags):
+        for tag in tags.data.split(','):
+            if len(tag) > 20:
+                raise ValidationError('Some of your tags are too long. Tags have a 20 character limit. Make sure to separate tags with commas.')
 
 # form for users to upload new files to kit (documents, slides, etc.)
 class UploadKitFilesForm(FlaskForm):

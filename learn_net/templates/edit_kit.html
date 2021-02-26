@@ -49,6 +49,7 @@
             <div class='form-group'>
                 {{ editKitForm.category.label(class='form=control-label') }} 
                 {% if editKitForm.category.errors %}
+                    {{ editKitForm.category(class='form-control form-control-lg is-invalid', autocomplete='off') }}
                     <!-- display errors !-->
                     {% for error in editKitForm.category.errors %}
                         <span class='text-danger'>{{ error }}</span> 
@@ -61,6 +62,7 @@
             <div class='form-group'>
                 {{ editKitForm.tags.label(class='form=control-label') }} 
                 {% if editKitForm.tags.errors %}
+                    {{ editKitForm.tags(class='form-control form-control-lg is-invalid', autocomplete='off') }}
                     <!-- display errors !-->
                     {% for error in editKitForm.tags.errors %}
                         <span class='text-danger'>{{ error }}</span> 
