@@ -8,7 +8,7 @@
     <legend class='border-bottom'>
         {{ kit.title }}
         <span class='badge badge-secondary'>{{ kit.category }}</span>
-        <a href='{{ url_for("edit_kit", kitID=kit.id) }}' download>
+        <a href='{{ url_for("edit_kit", kitID=kit.id) }}'>
             <button type='button' class='btn btn-outline-primary float-right'>Edit</button>
         </a>
     </legend>

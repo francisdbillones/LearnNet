@@ -285,9 +285,9 @@ def edit_kit(kitID):
         editKitForm.category.data = kit.category
         editKitForm.tags.data = ', '.join([tag.tag for tag in kit.tags])
     
-    return render_template('edit_kit.html', editKitForm=editKitForm)
+    return render_template('edit_kit.html', editKitForm=editKitForm, kit=kit)
 
-@app.route('/kits/<int:kitID>/delete', methods=['GET', 'POST'])
+@app.route('/kits/<int:kitID>/delete', methods=['POST'])
 @login_required
 def delete_kit(kitID):
     kit = Kit.query.filter_by(id = kitID).first()
@@ -319,9 +319,39 @@ def download_kit_file(kitID, filename):
         flash('That page does not exist.', 'danger')
         return redirect(url_for('kits'))
 
-    download_path = os.path.join(app.root_path, 'static', 'user_kits', str(kit.id))
+    path = os.path.join(app.root_path, 'static', 'user_kits', str(kit.id))
 
-    return send_from_directory(directory=download_path, filename=filename, as_attachment=True)
+    return send_from_directory(directory=path, filename=filename, as_attachment=True)
+
+@app.route('/kits/<int:kitID>/delete/<path:filename>', methods=['POST'])
+@login_required
+def delete_kit_file(kitID, filename):
+    kit = Kit.query.filter_by(id = kitID).first()
+    if not kit or filename not in [file.filename for file in kit.files]:
+        flash('That page does not exist.', 'danger')
+        return redirect(url_for('kits'))
+    
+    if current_user.id != kit.owner.id:
+        flash('You aren\'t allowed to do that.', 'danger')
+        return redirect(url_for('kits'))
+    
+    for file in kit.files:
+        if file.filename == filename:
+            db.session.delete(file)
+            break
+    
+    db.session.commit()
+    
+    file_path = os.path.join(app.root_path, 'static', 'user_kits', str(kit.id), filename)
+    
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        
+    flash('File deleted.', 'warning')
+    
+    return redirect(url_for('edit_kit', kitID=kit.id))
+    
+
 
 @app.route('/getusername')
 def getusername():
