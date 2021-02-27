@@ -34,14 +34,7 @@ app.config['MAX_KIT_FILE_COUNT'] = 10
 
 # set valid files to be uploaded
 app.config['ALLOWED_EXTENSIONS'] = [
-    'doc',
-    'docx',
-    'pdf',
-    'odt',
-    
-    'ppt',
-    'pptx',
-    'pptm'
+    'pdf'
 ]
 
 # app.jinja_env.filters['path_join'] = lambda paths: os.path.join(*paths)

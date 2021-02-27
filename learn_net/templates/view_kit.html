@@ -20,15 +20,13 @@
 
     <div class='mt-3 mb-3'> {{ kit.kit_description }} </div>
 
-    <div>
-        {% for file in kit.files %}
+    {% for file in kit.files %}
 
-        <div>
-            <a href='{{ url_for("download_kit_file", kitID=kit.id, filename=file.filename) }}'>{{ file.filename }}</a>
-        </div>
-
-        {% endfor %}
+    <div class='content-section'>
+        <a href='{{ url_for("download_kit_file", kitID=kit.id, filename=file.filename) }}'>{{ file.filename }}</a>
     </div>
+
+    {% endfor %}
 
     <form action='' method='POST' enctype='multipart/form-data'>
         {{ uploadKitFilesForm.hidden_tag() }}
