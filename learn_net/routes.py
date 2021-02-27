@@ -232,7 +232,7 @@ def view_kit(kitID):
         flash('Your changes have been saved.', 'success')
         
     for file in kit.files:
-        file.download_path = os.path.join(app.root_path, 'static', 'user_kits', str(kit.id), file.filename)
+        file.path = url_for('static', filename='/'.join(['user_kits', str(kitID), file.filename]))
     
     return render_template('view_kit.html', kit=kit, uploadKitFilesForm=uploadKitFilesForm)    
 
@@ -315,11 +315,15 @@ def delete_kit(kitID):
 @app.route('/kits/<int:kitID>/download/<path:filename>')
 def download_kit_file(kitID, filename):
     kit = Kit.query.filter_by(id = kitID).first()
-    if not kit or filename not in [file.filename for file in kit.files]:
+    if not kit:
+        flash('That page does not exist.', 'danger')
+        return redirect(url_for('kits'))
+    
+    if filename not in [file.filename for file in kit.files]:
         flash('That page does not exist.', 'danger')
         return redirect(url_for('kits'))
 
-    path = os.path.join(app.root_path, 'static', 'user_kits', str(kit.id))
+    path = os.path.join(app.root_path, 'static', 'user_kits', str(kitID))
 
     return send_from_directory(directory=path, filename=filename, as_attachment=True)
 
@@ -327,7 +331,11 @@ def download_kit_file(kitID, filename):
 @login_required
 def delete_kit_file(kitID, filename):
     kit = Kit.query.filter_by(id = kitID).first()
-    if not kit or filename not in [file.filename for file in kit.files]:
+    if not kit:
+        flash('That page does not exist.', 'danger')
+        return redirect(url_for('kits'))
+    
+    if filename not in [file.filename for file in kit.files]:
         flash('That page does not exist.', 'danger')
         return redirect(url_for('kits'))
     
@@ -342,16 +350,14 @@ def delete_kit_file(kitID, filename):
     
     db.session.commit()
     
-    file_path = os.path.join(app.root_path, 'static', 'user_kits', str(kit.id), filename)
+    file_path = os.path.join(app.root_path, 'static', 'user_kits', str(kitID), filename)
     
     if os.path.exists(file_path):
         os.remove(file_path)
         
     flash('File deleted.', 'warning')
     
-    return redirect(url_for('edit_kit', kitID=kit.id))
-    
-
+    return redirect(url_for('edit_kit', kitID=kitID))
 
 @app.route('/getusername')
 def getusername():

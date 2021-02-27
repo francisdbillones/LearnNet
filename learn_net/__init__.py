@@ -37,6 +37,9 @@ app.config['ALLOWED_EXTENSIONS'] = [
     'pdf'
 ]
 
+# path to pdf.js viewer
+app.config['PDF_JS_PATH'] = os.path.join('pdf.js', 'web', 'viewer.html')
+
 # app.jinja_env.filters['path_join'] = lambda paths: os.path.join(*paths)
 
 Session(app)

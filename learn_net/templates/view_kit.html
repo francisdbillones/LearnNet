@@ -23,7 +23,7 @@
     {% for file in kit.files %}
 
     <div class='content-section'>
-        <a href='{{ url_for("download_kit_file", kitID=kit.id, filename=file.filename) }}'>{{ file.filename }}</a>
+        <a href='{{ url_for("static", filename="/".join(["pdf.js", "web", "viewer.html"]), file=file.path) }}' target='_blank'>{{ file.filename }}</a>
     </div>
 
     {% endfor %}
