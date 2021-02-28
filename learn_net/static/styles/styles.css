@@ -71,3 +71,8 @@ a {
     font-weight: bold;
     display: inline-block;
 }
+
+.flexible-input {
+    overflow: hidden;
+    padding-right: .5em;
+}

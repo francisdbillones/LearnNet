@@ -44,6 +44,18 @@ def save_kit_file(kitID, file):
     
     return filename
 
+def rename_kit_file(kitID, old_filename, new_filename):
+    new_filename = secure_filename(new_filename)
+    kit_path = os.path.join(app.root_path, 'static', 'user_kits', str(kitID))
+    
+    old_path = os.path.join(kit_path, old_filename)
+    new_path = os.path.join(kit_path, new_filename)
+    
+    os.rename(old_path, new_path)
+    
+    return new_filename
+    
+
 def delete_kit_file(kitID, file):
     filename = secure_filename(file.filename)
     path = os.path.join(app.root_path, 'static', 'user_kits', str(kitID), filename)
@@ -54,5 +66,3 @@ def allowed_file(filename):
     extension = os.path.splitext(filename)[1][1::]
     
     return extension in app.config['ALLOWED_EXTENSIONS']
-
-    

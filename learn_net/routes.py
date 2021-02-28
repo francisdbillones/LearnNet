@@ -7,7 +7,7 @@ from learn_net.forms import *
 from learn_net.models import  User, Kit, KitFile, KitTag
 from learn_net import app, db, bcrypt, session
 
-from learn_net.helpers import save_profile_picture, save_kit_file, create_kit_folder
+from learn_net.helpers import save_profile_picture, save_kit_file, create_kit_folder, rename_kit_file
 
 from datetime import datetime
 
@@ -229,7 +229,7 @@ def view_kit(kitID):
         for f in uploadKitFilesForm.files.data:
             if secure_filename(f.filename) in [file.filename for file in kit.files]:
                 flash('That file already exists in this kit. If it doesn\'t, check the filename.', 'danger')
-                return redirect(url_for('edit_kit', kitID=kitID))
+                return redirect(url_for('view_kit', kitID=kitID))
             
             file = KitFile(filename=save_kit_file(kit.id, f), kit_id = kit.id)
             db.session.add(file)
@@ -250,7 +250,7 @@ def edit_kit(kitID):
         flash('You\'re not allowed to do that.', 'danger')
         return redirect(request.referrer)
 
-    editKitForm = EditKitForm()
+    editKitForm = EditKitForm(kit)
     if editKitForm.validate_on_submit():
         changed = False
         
@@ -274,26 +274,23 @@ def edit_kit(kitID):
                 db.session.add(new_tag)
             changed = True
         
-        if editKitForm.files.data:
-            for f in editKitForm.files.data:
-                if f.filename in [file.filename for file in kit.files]:
-                    flash('That file already exists in this kit. If it doesn\'t, check the filename.', 'danger')
-                    return redirect(url_for('edit_kit', kitID=kitID))
-                
-                file = KitFile(filename = save_kit_file(f), kit_id = kit.id)
-                db.session.add(file)
-            changed = True
+        for file in kit.files:
+            file.filename = rename_kit_file(kitID, file.filename, editKitForm[f'{file.filename}-filename'].data)    
+        
         db.session.commit()
         
         if changed:
             flash('Changes saved.', 'success')
-            return redirect(url_for('view_kit', kitID=kitID))
+            return redirect(url_for('edit_kit', kitID=kitID))
     
     elif request.method == 'GET':
         editKitForm.title.data = kit.title
         editKitForm.kit_description.data = kit.kit_description
         editKitForm.category.data = kit.category
-        editKitForm.tags.data = ', '.join([tag.tag for tag in kit.tags])
+        editKitForm.tags.data = ','.join([tag.tag for tag in kit.tags])
+        
+        for file in kit.files:
+            editKitForm[f'{file.filename}-filename'].data = file.filename
     
     return render_template('edit_kit.html', editKitForm=editKitForm, kit=kit)
 
@@ -337,7 +334,7 @@ def download_kit_file(kitID, filename):
 
     return send_from_directory(directory=path, filename=filename, as_attachment=True)
 
-@app.route('/kits/<int:kitID>/delete/<path:filename>', methods=['POST'])
+@app.route('/kits/<int:kitID>/delete/<path:filename>')
 @login_required
 def delete_kit_file(kitID, filename):
     kit = Kit.query.filter_by(id = kitID).first()

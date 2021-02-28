@@ -85,25 +85,33 @@ class CreateKitForm(FlaskForm):
             if len(tag) > 20:
                 raise ValidationError('That tag is too long.')
 
-class EditKitForm(FlaskForm):
-    title = StringField('Title', description='Edit your title.', validators=[Length(min=5, max=30)])
+def EditKitForm(kit):
+    class form(FlaskForm):
+        title = StringField('Title', description='Edit your title.', validators=[Length(min=5, max=30)])
+        
+        kit_description = TextAreaField('Description', description='Describe this kit.', validators=[Length(min=20)])
+        
+        category = SelectField('Category', description='For what topic is this for?', choices=[
+            'Language', 'Mathematics', 'Science', 'Health', 'Physical Education', 'Art', 'Music', 'Other'
+        ])
+        
+        tags = StringField('Tags', description='Add a few tags. Separate tags with commas.', validators=[Length(min=3, max=50)])
+        
+        submit = SubmitField('Save changes')
     
-    kit_description = TextAreaField('Description', description='Describe this kit.', validators=[Length(min=20)])
+        def validate_tags(self, tags):
+            for tag in tags.data.split(','):
+                if len(tag) > 20:
+                    raise ValidationError('Some of your tags are too long. Tags have a 20 character limit. Make sure to separate tags with commas.')
     
-    category = SelectField('Category', description='For what topic is this for?', choices=[
-        'Language', 'Mathematics', 'Science', 'Health', 'Physical Education', 'Art', 'Music', 'Other'
-    ])
+    for file in kit.files:
+        setattr(form, f'{file.filename}-filename', StringField('Filename', validators=[DataRequired(), Length(min=5, max=30)]))
     
-    tags = StringField('Tags', description='Add a few tags. Separate tags with commas.', validators=[Length(min=3, max=50)])
+    editKitForm = form()
     
-    submit = SubmitField('Save changes')
-    
-    def validate_tags(self, tags):
-        for tag in tags.data.split(','):
-            if len(tag) > 20:
-                raise ValidationError('Some of your tags are too long. Tags have a 20 character limit. Make sure to separate tags with commas.')
+    return editKitForm
 
-# form for users to upload new files to kit (documents, slides, etc.)
+# form for users to upload new files to kit (documents, etc.)
 class UploadKitFilesForm(FlaskForm):
     files = MultipleFileField('Add more files', validators=[DataRequired()], description='You can upload up to 50 MB.')
     submit = SubmitField('Upload')

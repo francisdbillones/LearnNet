@@ -69,43 +69,55 @@
                 {% endif %}
             </div>
         </fieldset>
-        {{ editKitForm.submit(class='btn btn-outline-info') }}
-    </form>
+        
+        <legend>Files in this kit</legend>
+        {% for file in kit.files %}
 
-    <legend>Files in this kit</legend>
-    {% for file in kit.files %}
+        <article class='media'>
+            <div class='media-body'>
+                <button type='button' class='btn btn-outline-danger float-right mr-2' data-toggle="modal" data-target="#deleteKitFileModal"><i class='fa fa-trash'></i></button>
 
-    <article class='media content-section'>
-        <div class='media-body'>
-
-        <a href='{{ url_for("download_kit_file", kitID=kit.id, filename=file.filename) }}'><strong>{{ file.filename }}</strong></a>
-
-        <button type='button' class='btn btn-outline-danger float-right mr-2' data-toggle="modal" data-target="#deleteKitModal"><i class='fa fa-trash'></i></button>
-
-        <div class="modal fade" id="deleteKitModal" tabindex="-1" role="dialog" aria-labelledby="deletKitModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="deleteKitModalLabel">Confirm deletion</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        Are you sure you want to delete this kit? You won't be able to recover it.
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
-                        <form action='{{ url_for("delete_kit_file", kitID=kit.id, filename=file.filename) }}' method='post'>
-                            <button class='btn btn-danger' type='submit'>Confirm</button>
-                        </form>
+                <div class="modal fade" id="deleteKitFileModal" tabindex="-1" role="dialog" aria-labelledby="deletKitFileModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteKitFileModalLabel">Confirm deletion</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                Are you sure you want to delete this file? You won't be able to recover it.
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+                                <a href='{{ url_for("delete_kit_file", kitID=kit.id, filename=file.filename) }}'>
+                                    <button class='btn btn-danger' type='button'>Confirm</button> 
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        </div>
-    </article>
 
-    {% endfor %}
+                <div class='form-group flexible-input'>
+                    {% if editKitForm[file.filename ~ '-filename'].errors %}
+                        <!-- display errors !-->
+                        {{ editKitForm[file.filename ~ '-filename'](class='form-control form-control-lg is-invalid', autocomplete='off') }}
+                        <div class='invalid-feedback'>
+                            {% for error in editKitForm[file.filename ~ '-filename'].errors %}
+                                <span>{{ error }}</span> 
+                            {% endfor %}
+                        </div>
+
+                    {% else %} 
+                        {{ editKitForm[file.filename ~ '-filename'](class='form-control form-control-lg', autocomplete='off', autofocus=true) }} 
+                    {% endif %}
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+
+        {{ editKitForm.submit(class='btn btn-outline-info') }}
+    </form>
 </div>
 {% endblock %}

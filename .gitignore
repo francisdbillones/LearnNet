@@ -1,6 +1,10 @@
 # visual studio code
 .vscode
 
+# user's content
+user_kits/
+images/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

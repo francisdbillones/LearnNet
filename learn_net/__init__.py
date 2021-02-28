@@ -45,7 +45,7 @@ app.config['PDF_JS_PATH'] = os.path.join('pdf.js', 'web', 'viewer.html')
 Session(app)
 
 # create images folder
-images_path = os.path.join(app.root_path, 'learn_net', 'static', 'images')
+images_path = os.path.join(app.root_path, 'static', 'images')
 if not os.path.exists(images_path):
     os.makedirs(images_path)
     # create profile_pictures folder
@@ -54,7 +54,7 @@ if not os.path.exists(images_path):
         os.makedirs(profile_pictures_path)
 
 # create user_kits folder
-user_kits_path = os.path.join(app.root_path, 'learn_net', 'static', 'user_kits')
+user_kits_path = os.path.join(app.root_path, 'static', 'user_kits')
 if not os.path.exists(user_kits_path):
     os.makedirs(user_kits_path)
 
