@@ -1,6 +1,8 @@
 from flask import render_template, redirect, url_for, flash, request, jsonify, send_from_directory
 from flask_login import login_user, logout_user, login_required, current_user
 
+from werkzeug.utils import secure_filename
+
 from learn_net.forms import *
 from learn_net.models import  User, Kit, KitFile, KitTag
 from learn_net import app, db, bcrypt, session
@@ -225,6 +227,10 @@ def view_kit(kitID):
             return redirect(url_for('kits'))
         
         for f in uploadKitFilesForm.files.data:
+            if secure_filename(f.filename) in [file.filename for file in kit.files]:
+                flash('That file already exists in this kit. If it doesn\'t, check the filename.', 'danger')
+                return redirect(url_for('edit_kit', kitID=kitID))
+            
             file = KitFile(filename=save_kit_file(kit.id, f), kit_id = kit.id)
             db.session.add(file)
         db.session.commit() 
@@ -270,6 +276,10 @@ def edit_kit(kitID):
         
         if editKitForm.files.data:
             for f in editKitForm.files.data:
+                if f.filename in [file.filename for file in kit.files]:
+                    flash('That file already exists in this kit. If it doesn\'t, check the filename.', 'danger')
+                    return redirect(url_for('edit_kit', kitID=kitID))
+                
                 file = KitFile(filename = save_kit_file(f), kit_id = kit.id)
                 db.session.add(file)
             changed = True
