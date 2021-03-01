@@ -46,6 +46,12 @@ def save_kit_file(kitID, file):
 
 def rename_kit_file(kitID, old_filename, new_filename):
     new_filename = secure_filename(new_filename)
+    
+    # if new filename has no extension, assume the extension from the previous filename
+    if not os.path.splitext(new_filename)[1]:
+        old_ext = os.path.splitext(old_filename)[1]
+        new_filename = ''.join([new_filename, old_ext])
+    
     kit_path = os.path.join(app.root_path, 'static', 'user_kits', str(kitID))
     
     old_path = os.path.join(kit_path, old_filename)
