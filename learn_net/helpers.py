@@ -25,11 +25,13 @@ def delete_profile_picture(picture_file):
     path = os.path.join(app.root_path, 'static', 'images', 'profile_pictures', picture_file.filename)
     os.remove(path)
 
+# create a kit folder if it doesn't exist, else, just return the path
 def create_kit_folder(kitID):
     path = os.path.join(app.root_path, 'static', 'user_kits', str(kitID))
     
     if not os.path.exists(path):
         os.makedirs(path)
+    return path
 
 def delete_kit_folder(kitID):
     path = os.path.join(app.root_path, 'static', 'user_kits', str(kitID))
@@ -38,9 +40,10 @@ def delete_kit_folder(kitID):
 
 def save_kit_file(kitID, file):
     filename = secure_filename(file.filename)
-    path = os.path.join(app.root_path, 'static', 'user_kits', str(kitID), filename)
+    folder_path = create_kit_folder(kitID)
+    file_path = os.path.join(folder_path, filename)
     
-    file.save(path)
+    file.save(file_path)
     
     return filename
 
