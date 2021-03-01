@@ -1,4 +1,4 @@
-from flask import Flask, session
+from flask import Flask, session, url_for
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -36,11 +36,6 @@ app.config['MAX_KIT_FILE_COUNT'] = 10
 app.config['ALLOWED_EXTENSIONS'] = [
     'pdf'
 ]
-
-# path to pdf.js viewer
-app.config['PDF_JS_PATH'] = os.path.join('pdf.js', 'web', 'viewer.html')
-
-# app.jinja_env.filters['path_join'] = lambda paths: os.path.join(*paths)
 
 Session(app)
 

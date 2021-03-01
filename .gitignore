@@ -5,6 +5,9 @@
 user_kits/
 images/
 
+# pdf.js
+pdf.js/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
