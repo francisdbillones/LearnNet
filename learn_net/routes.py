@@ -171,9 +171,12 @@ def search():
     # search for kits
     query = request.args.get('query')
     
-    search = f'%{query}%'
+    if not query or len(query) > 30:
+        if not request.referrer:
+            return redirect(url_for('index'))
+        return redirect(request.referrer)
     
-    result_kits = Kit.query.filter(Kit.title.like(search))
+    result_kits = Kit.query.filter(Kit.title.like(f'%{query}%'))
     
     if not result_kits.count():
         flash('We couldn\'t find any kits matching your search.', 'warning')

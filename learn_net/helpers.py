@@ -1,9 +1,12 @@
+from learn_net.models import Kit
 from werkzeug.utils import secure_filename
 from learn_net import app
 from PIL import Image
 from flask_login import current_user
+
 import secrets
 import os
+import functools
 
 def save_profile_picture(picture_file):
     if current_user.pfp_file == 'default.jpg':
@@ -62,7 +65,7 @@ def rename_kit_file(kitID, old_filename, new_filename):
     
     os.rename(old_path, new_path)
     
-    return new_filename    
+    return new_filename
 
 def delete_kit_file(kitID, file):
     filename = secure_filename(file.filename)

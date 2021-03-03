@@ -55,8 +55,6 @@ if not os.path.exists(images_path):
 user_kits_path = os.path.join(app.root_path, 'static', 'user_kits')
 if not os.path.exists(user_kits_path):
     os.makedirs(user_kits_path)
-    
-    
 
 # Ensure responses aren't cached
 @app.after_request
