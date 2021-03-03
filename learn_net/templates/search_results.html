@@ -2,12 +2,12 @@
 
 {% block main %}
 
-{% if not result_kits.count() %}
+{% if not result_kits.items %}
     <img class='mx-auto my-5 d-block img-fluid rounded-circle' src='{{ url_for("static", filename=(["images", "barren-wasteland.jpg"]) | os_path_join) }}'>
     <small class='text-muted mx-auto d-block text-center'>Look, a barren wasteland.</small>
 {% endif %}
 
-{% for kit in result_kits %}
+{% for kit in result_kits.items %}
         <article class='media content-section'>
           <a href='{{ url_for("account", username=kit.owner.username) }}'>
             <img class='rounded-circle article-img' src='{{ url_for("static", filename="/images/profile_pictures/" + kit.owner.pfp_file) }}' height='50px'>

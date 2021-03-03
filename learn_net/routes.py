@@ -14,7 +14,7 @@ from datetime import datetime
 import secrets
 import os
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def index():
     return render_template('index.html')
 
@@ -114,49 +114,6 @@ def account(username):
     profile_image = url_for('static', filename=f'images/{ current_user.pfp_file }')
     return render_template('account.html', profile_image=profile_image, updateAccountForm=updateAccountForm)
 
-@app.route('/<string:username>/edit', methods=['GET', 'POST'])
-@login_required
-def edit_account(username):
-    # allow user to edit their account information
-    
-    user = User.query.filter_by(username=username).first()
-    
-    if not user:
-        flash('That user does not exist.', 'danger')
-        return redirect(url_for('index'))
-    elif user.username != current_user.username:
-        flash('You are not allowed to do that.', 'danger')
-        return redirect(url_for('index'))
-    
-    updateAccountForm = UpdateAccountForm()
-
-    if updateAccountForm.validate_on_submit():
-        changed = False
-        if current_user.username != updateAccountForm.username.data:
-            current_user.username = updateAccountForm.username.data
-            changed = True
-
-        if current_user.email != updateAccountForm.email.data:
-            current_user.email = updateAccountForm.email.data
-            changed = True
-
-        if updateAccountForm.pfp_file.data:
-            save_profile_picture(updateAccountForm.pfp_file.data)
-            changed = True
-
-        db.session.commit()
-
-        if changed:
-            flash('Your account has been updated.', 'info')
-
-    elif request.method == 'GET':
-        # pre-fill fields
-        updateAccountForm.username.data = current_user.username
-        updateAccountForm.email.data = current_user.email
-        
-    profile_image = url_for('static', filename=f'images/{ current_user.pfp_file }')
-    return render_template('account.html', profile_image=profile_image, updateAccountForm=updateAccountForm)
-
 @app.route('/browse', methods=['GET', 'POST'])
 def browse():
     # browse index
@@ -176,18 +133,16 @@ def search():
             return redirect(url_for('index'))
         return redirect(request.referrer)
     
-    result_kits = Kit.query.filter(Kit.title.like(f'%{query}%'))
-    
+    if current_user.is_authenticated:
+        result_kits = Kit.query.filter(Kit.owner.has(User.id != current_user.id))\
+            .filter(Kit.title.like(f'%{query}%'))
+    else:
+        result_kits = Kit.query.filter(Kit.title.like(f'%{query}%'))
+
     if not result_kits.count():
         flash('We couldn\'t find any kits matching your search.', 'warning')
     
-    # remove user's own kits from the search results
-    if current_user.is_authenticated:
-    
-        result_kits = [kit for kit in result_kits if kit.owner.id != current_user.id]
-        # I can't for the life of me figure out how to use != in query.filter(). always seems to return a syntax error. just use this quick list comprehension for now
-    
-    return render_template('search_results.html', result_kits=result_kits)
+    return render_template('search_results.html', result_kits=result_kits.paginate())
 
 @app.route('/kits')
 @login_required
