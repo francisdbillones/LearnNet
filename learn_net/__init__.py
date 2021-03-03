@@ -44,7 +44,7 @@ images_path = os.path.join(app.root_path, 'static', 'images')
 if not os.path.exists(images_path):
     os.makedirs(images_path)
     # create profile_pictures folder
-    profile_pictures_path = os.path.join(app.root_path, images_path, 'profile_picutres')
+    profile_pictures_path = os.path.join(images_path, 'profile_picutres')
     if not os.path.isdir(profile_pictures_path):
         os.makedirs(profile_pictures_path)
 
@@ -52,9 +52,8 @@ if not os.path.exists(images_path):
 user_kits_path = os.path.join(app.root_path, 'static', 'user_kits')
 if not os.path.exists(user_kits_path):
     os.makedirs(user_kits_path)
-
-# download pdf.js dependency
-
+    
+    
 
 # Ensure responses aren't cached
 @app.after_request

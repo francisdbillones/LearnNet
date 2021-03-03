@@ -83,8 +83,6 @@ def account(username):
         return redirect(url_for('index'))
     
     updateAccountForm = UpdateAccountForm()
-    
-    # TODO fix crashing when uploading images on mobile
 
     if updateAccountForm.validate_on_submit():
         changed = False

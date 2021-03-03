@@ -62,8 +62,7 @@ def rename_kit_file(kitID, old_filename, new_filename):
     
     os.rename(old_path, new_path)
     
-    return new_filename
-    
+    return new_filename    
 
 def delete_kit_file(kitID, file):
     filename = secure_filename(file.filename)
