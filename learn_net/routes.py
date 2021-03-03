@@ -172,7 +172,17 @@ def search():
     query = request.args.get('query')
     
     search = f'%{query}%'
-    result_kits = Kit.query.filter(Kit.title.like(search).all())
+    
+    result_kits = Kit.query.filter(Kit.title.like(search))
+    
+    if not result_kits.count():
+        flash('We couldn\'t find any kits matching your search.', 'warning')
+    
+    # remove user's own kits from the search results
+    if current_user.is_authenticated:
+    
+        result_kits = [kit for kit in result_kits if kit.owner.id != current_user.id]
+        # I can't for the life of me figure out how to use != in query.filter(). always seems to return a syntax error. just use this quick list comprehension for now
     
     return render_template('search_results.html', result_kits=result_kits)
 
