@@ -166,6 +166,16 @@ def browse():
     
     return render_template('browse.html', extendedSearchForm=extendedSearchForm)
 
+@app.route('/browse/search')
+def search():
+    # search for kits
+    query = request.args.get('query')
+    
+    search = f'%{query}%'
+    result_kits = Kit.query.filter(Kit.title.like(search).all())
+    
+    return render_template('search_results.html', result_kits=result_kits)
+
 @app.route('/kits')
 @login_required
 def kits():
