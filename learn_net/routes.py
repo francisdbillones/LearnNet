@@ -81,7 +81,26 @@ def account(username):
     if not user:
         flash('That page does not exist.', 'danger')
         return redirect(url_for('index'))
+
+    return render_template('account.html', user=user)
+
+@app.route('/<string:username>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_account(username):
+    user = User.query.filter_by(username=username).first()
     
+    if not user:
+        flash('That page does not exist.')
+        if request.referrer:
+            return redirect(request.referrer)
+        return redirect(url_for('index'))
+
+    if not user.id == current_user.id:
+        flash('You\'re not allowed to do that.', 'danger')
+        if request.referrer:
+            return redirect(request.referrer)
+        return redirect(url_for('index'))
+
     updateAccountForm = UpdateAccountForm()
 
     if updateAccountForm.validate_on_submit():
@@ -107,12 +126,11 @@ def account(username):
             return redirect(url_for('account', username=user.username))
 
     elif request.method == 'GET':
-        # pre-fill fields
+        # pre-fill fields   
         updateAccountForm.username.data = current_user.username
         updateAccountForm.email.data = current_user.email
-        
-    profile_image = url_for('static', filename=f'images/{ current_user.pfp_file }')
-    return render_template('account.html', profile_image=profile_image, updateAccountForm=updateAccountForm)
+    
+    return render_template('edit_account.html', updateAccountForm=updateAccountForm)
 
 @app.route('/browse', methods=['GET', 'POST'])
 def browse():

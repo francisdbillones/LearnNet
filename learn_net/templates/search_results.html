@@ -3,26 +3,26 @@
 {% block main %}
 
 {% if not result_kits.items %}
-    <img class='mx-auto my-5 d-block img-fluid rounded-circle' src='{{ url_for("static", filename=(["images", "barren-wasteland.jpg"]) | os_path_join) }}'>
-    <small class='text-muted mx-auto d-block text-center'>Look, a barren wasteland.</small>
+  <img class='mx-auto my-5 d-block img-fluid rounded-circle' src='{{ url_for("static", filename=(["images", "barren-wasteland.jpg"]) | os_path_join) }}'>
+  <small class='text-muted mx-auto d-block text-center'>Look, a barren wasteland.</small>
 {% endif %}
 
 {% for kit in result_kits.items %}
-        <article class='media content-section'>
-          <a href='{{ url_for("account", username=kit.owner.username) }}'>
-            <img class='rounded-circle article-img' src='{{ url_for("static", filename="/images/profile_pictures/" + kit.owner.pfp_file) }}' height='50px'>
-          </a>
-          <div class='media-body'>
-            <div class='article-metadata'>
-              <a class='mr-2' href='{{ url_for("account", username=kit.owner.username) }}'>{{ kit.owner.username }}</a>
-              <small class='text-muted'>{{ kit.category }}</small>
-              {% for tag in kit.tags %}
-              <span class='badge badge-pill badge-primary'>{{ tag.tag }}</span>
-              {% endfor %}
-            </div>
-            <h2><a class='article-title' href='{{ url_for("view_kit", kitID=kit.id) }}'>{{ kit.title }}</a></h2>
-          </div>
-        </article>
-    {% endfor %}
+  <article class='media content-section'>
+    <a href='{{ url_for("account", username=kit.owner.username) }}'>
+      <img class='rounded-circle article-img' src='{{ url_for("static", filename="/images/profile_pictures/" + kit.owner.pfp_file) }}' height='50px'>
+    </a>
+    <div class='media-body'>
+      <div class='article-metadata'>
+        <a class='mr-2' href='{{ url_for("account", username=kit.owner.username) }}'>{{ kit.owner.username }}</a>
+        <small class='text-muted'>{{ kit.category }}</small>
+        {% for tag in kit.tags %}
+        <span class='badge badge-pill badge-primary'>{{ tag.tag }}</span>
+        {% endfor %}
+      </div>
+      <h2><a class='article-title' href='{{ url_for("view_kit", kitID=kit.id) }}'>{{ kit.title }}</a></h2>
+    </div>
+  </article>
+{% endfor %}
 
 {% endblock %}
