@@ -6,6 +6,7 @@ from flask_login import LoginManager
 
 import secrets
 import os
+import boto3
 
 # Configure application
 app = Flask(__name__)
@@ -39,6 +40,17 @@ app.config['MAX_KIT_FILE_COUNT'] = 10
 app.config['ALLOWED_EXTENSIONS'] = [
     'pdf'
 ]
+
+# aws S3 setup
+app.config['AWS_S3_BUCKET_NAME'] = os.environ.get('AWS_S3_BUCKET_NAME')
+app.config['AWS_ACCESS_KEY'] = os.environ.get('AWS_ACCESS_KEY')
+app.config['AWS_SECRET_ACCESS_KEY'] = os.environ.get('AWS_SECRET_ACCESS_KEY')
+
+s3 = boto3.resource(
+    's3',
+    aws_access_key_id=app.config['AWS_ACCESS_KEY'],
+    aws_secret_access_key=app.config['AWS_SECRET_ACCESS_KEY']
+)
 
 Session(app)
 

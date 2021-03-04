@@ -2,7 +2,6 @@
 {% block title %} Welcome to LearnNet {% endblock %}
 
 {% block main %} 
-{% if not current_user.is_authenticated %}
 <div id='call-to-action'>
     <h1 class='cover-heading'>Free education for all.</h1>
     <p class='lead'>LearnNet is a platform to distribute educational resources, tools, and documents. Access material from universities and schools all around the world.</p>
@@ -10,7 +9,6 @@
         <a href='#' class='btn btn-lg btn-secondary'>Learn more</a>
     </p>
 </div>
-{% endif %}
 <form action='' method='post' required>
     <div class='input-group rounded'>
         <input name='search' type='search' class='form-control rounded' placeholder='Search our index' autofocus autocomplete='off' required />

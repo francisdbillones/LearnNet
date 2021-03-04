@@ -1,3 +1,4 @@
+from learn_net import s3
 from learn_net.models import Kit
 from werkzeug.utils import secure_filename
 from learn_net import app
@@ -6,7 +7,6 @@ from flask_login import current_user
 
 import secrets
 import os
-import functools
 
 def save_profile_picture(picture_file):
     if current_user.pfp_file == 'default.jpg':
@@ -16,13 +16,13 @@ def save_profile_picture(picture_file):
         new_filename = hexed_filename + extension
         current_user.pfp_file = new_filename
         
-        path = os.path.join(app.root_path, 'static', 'images', 'profile_pictures', new_filename)
+        local_path = os.path.join(app.root_path, 'static', 'images', 'profile_pictures', new_filename)
     else:
-        path = os.path.join(app.root_path, 'static', 'images', 'profile_pictures', current_user.pfp_file)
+        local_path = os.path.join(app.root_path, 'static', 'images', 'profile_pictures', current_user.pfp_file)
     
     image = Image.open(picture_file)
     image.thumbnail((125, 125))
-    image.save(path)
+    image.save(local_path)
 
 def delete_profile_picture(picture_file):
     path = os.path.join(app.root_path, 'static', 'images', 'profile_pictures', picture_file.filename)
