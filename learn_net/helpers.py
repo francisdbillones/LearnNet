@@ -18,18 +18,19 @@ def save_profile_picture(picture_file):
         
         object_key = os.path.join('images', 'profile_pictures', new_filename)
     else:
-        object_key = '/' + os.path.join('images', 'profile_pictures', current_user.pfp_file)
+        object_key = os.path.join('images', 'profile_pictures', current_user.pfp_file)
     
     image = Image.open(picture_file)
     image.thumbnail((125, 125))
 
-    s3.Bucket.upload_fileobj(picture_file, object_key)
+    s3.Bucket(app.config['AWS_S3_BUCKET_NAME']).upload_fileobj(picture_file, object_key)
 
 def save_kit_file(kitID, file):
     filename = secure_filename(file.filename)
     object_key = os.path.join('user_kits', str(kitID), filename)
     
-    s3.Bucket.upload_fileobj(file, object_key)
+    bucket = s3.Bucket(app.config['AWS_S3_BUCKET_NAME'])
+    bucket.upload_fileobj(file, object_key)
     
     return filename
 
@@ -49,7 +50,7 @@ def rename_kit_file(kitID, old_filename, new_filename):
         'Bucket': app.config['AWS_S3_BUCKET_NAME'],
         'Key': old_object_key
     }
-    s3.Bucket.copy(copy_source, new_object_key)
+    s3.Bucket(app.config['AWS_S3_BUCKET_NAME']).copy(copy_source, new_object_key)
     
     # delete the old object
     s3.Object(app.config['AWS_S3_BUCKET_NAME'], old_object_key).delete()

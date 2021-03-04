@@ -7,7 +7,7 @@ from learn_net.forms import *
 from learn_net.models import  User, Kit, KitFile, KitTag
 from learn_net import app, db, bcrypt, session
 
-from learn_net.helpers import save_profile_picture, save_kit_file, create_kit_folder, rename_kit_file
+from learn_net.helpers import save_profile_picture, save_kit_file, rename_kit_file
 
 from datetime import datetime
 
@@ -193,8 +193,6 @@ def create_kit():
             db.session.add(kitTag)
         
         db.session.commit()
-        
-        create_kit_folder(kit.id)
         
         flash('Successfully created kit!', 'success')
         return redirect(url_for('kits'))
