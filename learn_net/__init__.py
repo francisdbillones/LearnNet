@@ -54,20 +54,6 @@ s3 = boto3.resource(
 
 Session(app)
 
-# create images folder
-images_path = os.path.join(app.root_path, 'static', 'images')
-if not os.path.exists(images_path):
-    os.makedirs(images_path)
-    # create profile_pictures folder
-    profile_pictures_path = os.path.join(images_path, 'profile_picutres')
-    if not os.path.isdir(profile_pictures_path):
-        os.makedirs(profile_pictures_path)
-
-# create user_kits folder
-user_kits_path = os.path.join(app.root_path, 'static', 'user_kits')
-if not os.path.exists(user_kits_path):
-    os.makedirs(user_kits_path)
-
 # Ensure responses aren't cached
 @app.after_request
 def after_request(response):

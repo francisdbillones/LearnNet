@@ -16,36 +16,20 @@ def save_profile_picture(picture_file):
         new_filename = hexed_filename + extension
         current_user.pfp_file = new_filename
         
-        local_path = os.path.join(app.root_path, 'static', 'images', 'profile_pictures', new_filename)
-        s3_path = os.path.join('images', 'profile_pictures', new_filename)
+        object_key = os.path.join('images', 'profile_pictures', new_filename)
     else:
-        local_path = os.path.join(app.root_path, 'static', 'images', 'profile_pictures', current_user.pfp_file)
-        s3_path = '/' + os.path.join('images', 'profile_pictures', current_user.pfp_file)
+        object_key = '/' + os.path.join('images', 'profile_pictures', current_user.pfp_file)
     
     image = Image.open(picture_file)
     image.thumbnail((125, 125))
 
-    s3.meta.client.upload_fileobj(picture_file)
-
-# create a kit folder if it doesn't exist, else, just return the path
-def create_kit_folder(kitID):
-    path = os.path.join(app.root_path, 'static', 'user_kits', str(kitID))
-    
-    if not os.path.exists(path):
-        os.makedirs(path)
-    return path
-
-def delete_kit_folder(kitID):
-    path = os.path.join(app.root_path, 'static', 'user_kits', str(kitID))
-    if os.path.exists(path):
-        os.rmdir(path)
+    s3.Bucket.upload_fileobj(picture_file, object_key)
 
 def save_kit_file(kitID, file):
     filename = secure_filename(file.filename)
-    folder_path = create_kit_folder(kitID)
-    file_path = os.path.join(folder_path, filename)
+    object_key = os.path.join('user_kits', str(kitID), filename)
     
-    file.save(file_path)
+    s3.Bucket.upload_fileobj(file, object_key)
     
     return filename
 
@@ -56,21 +40,28 @@ def rename_kit_file(kitID, old_filename, new_filename):
     if not os.path.splitext(new_filename)[1]:
         old_ext = os.path.splitext(old_filename)[1]
         new_filename = ''.join([new_filename, old_ext])
+
+    old_object_key = os.path.join('user_kits', str(kitID), old_filename)    
+    new_object_key = os.path.join('user_kits', str(kitID), new_filename)
     
-    kit_path = os.path.join(app.root_path, 'static', 'user_kits', str(kitID))
+    # copy object from old path to new path
+    copy_source = {
+        'Bucket': app.config['AWS_S3_BUCKET_NAME'],
+        'Key': old_object_key
+    }
+    s3.Bucket.copy(copy_source, new_object_key)
     
-    old_path = os.path.join(kit_path, old_filename)
-    new_path = os.path.join(kit_path, new_filename)
-    
-    os.rename(old_path, new_path)
+    # delete the old object
+    s3.Object(app.config['AWS_S3_BUCKET_NAME'], old_object_key).delete()
     
     return new_filename
 
 def delete_kit_file(kitID, file):
     filename = secure_filename(file.filename)
-    path = os.path.join(app.root_path, 'static', 'user_kits', str(kitID), filename)
+    object_key = os.path.join(app.root_path, 'static', 'user_kits', str(kitID), filename)
     
-    os.remove(path)
+    # remove the object
+    s3.Object(app.config['AWS_S3_BUCKET_NAME'], object_key).delete()
     
 def allowed_file(filename):
     extension = os.path.splitext(filename)[1][1::]
