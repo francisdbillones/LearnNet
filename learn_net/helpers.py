@@ -17,16 +17,15 @@ def save_profile_picture(picture_file):
         current_user.pfp_file = new_filename
         
         local_path = os.path.join(app.root_path, 'static', 'images', 'profile_pictures', new_filename)
+        s3_path = os.path.join('images', 'profile_pictures', new_filename)
     else:
         local_path = os.path.join(app.root_path, 'static', 'images', 'profile_pictures', current_user.pfp_file)
+        s3_path = '/' + os.path.join('images', 'profile_pictures', current_user.pfp_file)
     
     image = Image.open(picture_file)
     image.thumbnail((125, 125))
-    image.save(local_path)
 
-def delete_profile_picture(picture_file):
-    path = os.path.join(app.root_path, 'static', 'images', 'profile_pictures', picture_file.filename)
-    os.remove(path)
+    s3.meta.client.upload_fileobj(picture_file)
 
 # create a kit folder if it doesn't exist, else, just return the path
 def create_kit_folder(kitID):
