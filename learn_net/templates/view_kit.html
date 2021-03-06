@@ -11,9 +11,13 @@
     <legend class='border-bottom'>
         {{ kit.title }}
         <span class='badge badge-secondary'>{{ kit.category }}</span>
-        <a href='{{ url_for("edit_kit", kitID=kit.id) }}'>
-            <button type='button' class='btn btn-outline-primary float-right'>Edit</button>
-        </a>
+        {% if current_user.is_authenticated %}
+            {% if kit.owner.id == current_user.id %}
+            <a href='{{ url_for("edit_kit", kitID=kit.id) }}'>
+                <button type='button' class='btn btn-outline-primary float-right'>Edit</button>
+            </a>
+            {% endif %}
+        {% endif %}
     </legend>
     <small>
         {% for tag in kit.tags %}
@@ -23,10 +27,20 @@
 
     <div class='mt-3 mb-3'> {{ kit.kit_description }} </div>
 
-    {% for file in kit.files %}
+    {% for file in files %}
 
     <div class='content-section'>
-        <a href='{{ url_for("static", filename="/".join(["pdf.js", "web", "viewer.html"]), file=file.path) }}' target='_blank'>{{ file.filename }}</a>
+        <a href='{{ s3.meta.client.generate_presigned_url("get_object", Params={
+            "Bucket": app.config["AWS_S3_BUCKET_NAME"],
+            "Key": file.key
+        }) }}'>{{ file.filename }}</a>
+        <a href='{{ s3.meta.client.generate_presigned_url("get_object", Params={
+            "Bucket": app.config["AWS_S3_BUCKET_NAME"],
+            "Key": file.key,
+            "ResponseContentType": "binary/octet-stream"
+        }) }}' class='ml-10'>
+            <button class='btn btn-outline-secondary btn-sm float-right'>Download</button>
+        </a>
     </div>
 
     {% endfor %}

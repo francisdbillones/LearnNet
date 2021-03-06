@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 
 from learn_net.forms import *
 from learn_net.models import  User, Kit, KitFile, KitTag
-from learn_net import app, db, bcrypt, session
+from learn_net import app, db, bcrypt, session, s3
 
 from learn_net.helpers import save_profile_picture, save_kit_file, rename_kit_file
 
@@ -230,9 +230,9 @@ def view_kit(kitID):
         flash('Your changes have been saved.', 'success')
         
     for file in kit.files:
-        file.path = url_for('static', filename='/'.join(['user_kits', str(kitID), file.filename]))
+        file.key = '/'.join(['user_kits', str(kit.id), file.filename])
     
-    return render_template('view_kit.html', kit=kit, uploadKitFilesForm=uploadKitFilesForm)    
+    return render_template('view_kit.html', kit=kit, uploadKitFilesForm=uploadKitFilesForm, files=kit.files)    
 
 @app.route('/kits/<int:kitID>/edit', methods=['GET', 'POST'])
 @login_required
@@ -323,7 +323,7 @@ def download_kit_file(kitID, filename):
         return redirect(url_for('kits'))
 
     path = os.path.join(app.root_path, 'static', 'user_kits', str(kitID))
-
+    
     return send_from_directory(directory=path, filename=filename, as_attachment=True)
 
 @app.route('/kits/<int:kitID>/delete/<path:filename>')

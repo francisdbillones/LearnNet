@@ -41,6 +41,9 @@ app.config['ALLOWED_EXTENSIONS'] = [
     'pdf'
 ]
 
+# set path for pdf.js viewer
+app.config['PDF_JS_PATH'] = '/'.join(['pdf.js', 'web', 'viewer.html'])
+
 # aws S3 setup
 app.config['AWS_S3_BUCKET_NAME'] = os.environ.get('AWS_S3_BUCKET_NAME')
 app.config['AWS_ACCESS_KEY'] = os.environ.get('AWS_ACCESS_KEY')
@@ -61,5 +64,13 @@ def after_request(response):
     response.headers['Expires'] = 0
     response.headers['Pragma'] = 'no-cache'
     return response
+
+@app.context_processor
+def inject_s3():
+    return dict(s3=s3)
+
+@app.context_processor
+def inject_app():
+    return dict(app=app)
 
 from learn_net import routes
