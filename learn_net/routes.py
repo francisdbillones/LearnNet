@@ -313,25 +313,25 @@ def delete_kit(kitID):
     db.session.delete(kit)
     db.session.commit()
     
+    s3.Bucket(app.config['AWS_S3_BUCKET_NAME']).delete_objects(
+        Delete={
+            'Objects':[
+                {
+                    'Key': '/'.join(['user_kits', str(kitID)])
+                }
+            ] + [
+                {
+                    'Key': '/'.join(['user_kits', str(kitID), file.filename])
+                }
+                for file in kit.files
+            ]
+        }
+    )
+    
     flash('Kit deleted successfully', 'success')
     if request.referrer:
         return redirect(request.referrer)
     return redirect(url_for('kits'))
-
-@app.route('/kits/<int:kitID>/download/<path:filename>')
-def download_kit_file(kitID, filename):
-    kit = Kit.query.filter_by(id = kitID).first()
-    if not kit:
-        flash('That page does not exist.', 'danger')
-        return redirect(url_for('kits'))
-    
-    if filename not in [file.filename for file in kit.files]:
-        flash('That page does not exist.', 'danger')
-        return redirect(url_for('kits'))
-
-    path = os.path.join(app.root_path, 'static', 'user_kits', str(kitID))
-    
-    return send_from_directory(directory=path, filename=filename, as_attachment=True)
 
 @app.route('/kits/<int:kitID>/delete/<path:filename>')
 @login_required
@@ -356,10 +356,15 @@ def delete_kit_file(kitID, filename):
     
     db.session.commit()
     
-    file_path = os.path.join(app.root_path, 'static', 'user_kits', str(kitID), filename)
-    
-    if os.path.exists(file_path):
-        os.remove(file_path)
+    s3.Bucket(app.config['AWS_S3_BUCKET_NAME']).delete_objects(
+        Delete={
+            'Objects':[
+                {
+                    'Key': '/'.join(['user_kits', str(kitID), filename])
+                }
+            ]
+        }
+    )
         
     flash('File deleted.', 'warning')
     
