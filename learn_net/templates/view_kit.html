@@ -33,7 +33,7 @@
         <a href='{{ s3.meta.client.generate_presigned_url("get_object", Params={
             "Bucket": app.config["AWS_S3_BUCKET_NAME"],
             "Key": file.key
-        }) }}'>{{ file.filename }}</a>
+        }) }}' target='_blank'>{{ file.filename }}</a>
         <a href='{{ s3.meta.client.generate_presigned_url("get_object", Params={
             "Bucket": app.config["AWS_S3_BUCKET_NAME"],
             "Key": file.key,
