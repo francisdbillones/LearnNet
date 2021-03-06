@@ -159,8 +159,14 @@ def search():
 
     if not result_kits.count():
         flash('We couldn\'t find any kits matching your search.', 'warning')
+        
+    null_search_image_url = s3.meta.client.generate_presigned_url("get_object", Params={
+            "Bucket": app.config["AWS_S3_BUCKET_NAME"],
+            "Key": '/'.join(['images', 'barren-wasteland.jpg']),
+            "ResponseContentType": "image/jpeg"
+        })
     
-    return render_template('search_results.html', result_kits=result_kits.paginate())
+    return render_template('search_results.html', result_kits=result_kits.paginate(), null_search_image_url=null_search_image_url)
 
 @app.route('/kits')
 @login_required
@@ -267,8 +273,9 @@ def edit_kit(kitID):
             changed = True
         
         for file in kit.files:
-            file.filename = rename_kit_file(kitID, file.filename, editKitForm[f'{file.filename}-filename'].data)    
-        
+            if file.filename != editKitForm[f'{file.filename}-filename'].data:
+                file.filename = rename_kit_file(kitID, file.filename, editKitForm[f'{file.filename}-filename'].data)    
+
         db.session.commit()
         
         if changed:

@@ -4,7 +4,13 @@
 {% block main %}
 <div class='content-section'>
     <div class='media'>
-        <img alt='profile picture' class='rounded-circle account-img' src='{{ url_for("static", filename="images/profile_pictures/" + user.pfp_file) }}'>
+        <img alt='profile picture' class='rounded-circle account-img' src='{{ s3.meta.client.generate_presigned_url("get_object",
+            Params={
+                "Bucket": app.config["AWS_S3_BUCKET_NAME"],
+                "Key": "/".join(["images", "profile_pictures", user.pfp_file]),
+                "ResponseContentType": "image/jpeg"
+            }
+        ) }}'>
         <div class='media-body'>
             <h2 class='heading'>{{ user.username }}.</h2>
             <p class='text-secondary'>{{ user.email }}</p>

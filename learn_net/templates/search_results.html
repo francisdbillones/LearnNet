@@ -3,7 +3,7 @@
 {% block main %}
 
 {% if not result_kits.items %}
-  <img class='mx-auto my-5 d-block img-fluid rounded-circle' src='{{ url_for("static", filename=(["images", "barren-wasteland.jpg"]) | os_path_join) }}'>
+  <img class='mx-auto my-5 d-block img-fluid rounded-circle' src='{{ null_search_image_url }}'>
   <small class='text-muted mx-auto d-block text-center'>Look, a barren wasteland.</small>
 {% endif %}
 

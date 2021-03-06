@@ -20,7 +20,13 @@
     {% for kit in userKits %}
         <article class='media content-section'>
           <a href='{{ url_for("account", username=kit.owner.username) }}'>
-            <img class='rounded-circle article-img' src='{{ url_for("static", filename="/images/profile_pictures/" + kit.owner.pfp_file) }}' height='50px'>
+            <img class='rounded-circle article-img' src='{{ s3.meta.client.generate_presigned_url("get_object",
+              Params={
+                "Bucket": app.config["AWS_S3_BUCKET_NAME"],
+                "Key": "/".join(["images", "profile_pictures", kit.owner.pfp_file]),
+                "ResponseContentType": "images/jpeg"
+              }
+            ) }}' height='50px'>
           </a>
           <div class='media-body'>
             <div class='article-metadata'>
