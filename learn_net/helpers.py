@@ -31,18 +31,10 @@ def save_profile_picture(picture_file):
 def save_kit_file(kitID, file):
     filename = secure_filename(file.filename)
     object_key = os.path.join('user_kits', str(kitID), filename)
-    local_path = os.path.join(app.root_path, 'static', object_key)
     
-    # save file to local, temporarily
-    file.save(local_path)
-    
-    # upload file with content type set to application/pdf. for some reason, when we don't do this, content type gets set to binary/octet-stream, and the browser can't view the pdf file.
-    s3.Bucket(app.config['AWS_S3_BUCKET_NAME']).upload_file(local_path, object_key, ExtraArgs={
+    s3.Bucket(app.config['AWS_S3_BUCKET_NAME']).upload_fileobj(file, object_key, ExtraArgs={
         'ContentType': 'application/pdf'
     })
-    
-    # now delete the local file
-    os.remove(local_path)
     
     return filename
 
