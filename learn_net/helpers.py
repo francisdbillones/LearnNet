@@ -23,8 +23,11 @@ def save_profile_picture(picture_file):
     image = Image.open(picture_file)
     image.thumbnail((125, 125))
 
+    extension = os.path.splitext(picture_file.filename)[1]
+    content_type = f'image/{extension}'
+
     s3.Bucket(app.config['AWS_S3_BUCKET_NAME']).upload_fileobj(picture_file, object_key, ExtraArgs={
-        'ContentType': 'image/jpeg'
+        'ContentType': content_type
     })
 
 def save_kit_file(kitID, file):
