@@ -7,6 +7,7 @@ from flask_login import current_user
 
 import secrets
 import os
+import io
 
 def save_profile_picture(picture_file):
     if current_user.pfp_file == 'default.jpg':
@@ -20,14 +21,15 @@ def save_profile_picture(picture_file):
     else:
         object_key = '/'.join(['images', 'profile_pictures', current_user.pfp_file])
     
-    image = Image.open(picture_file)
-    image.thumbnail((125, 125))
-
-    extension = os.path.splitext(picture_file.filename)[1]
-    content_type = f'image/{extension}'
-
-    s3.Bucket(app.config['AWS_S3_BUCKET_NAME']).upload_fileobj(picture_file, object_key, ExtraArgs={
-        'ContentType': content_type
+    resized_image = Image.open(picture_file).resize((125, 125))
+    
+    with io.BytesIO() as final_picture:
+        extension = os.path.splitext(picture_file.filename)[1][1::]
+        resized_image.save(final_picture, format=extension)
+        final_picture.seek(0)
+        
+    s3.Bucket(app.config['AWS_S3_BUCKET_NAME']).upload_fileobj(final_picture, object_key, ExtraArgs={
+        'ContentType': picture_file.mimetype
     })
 
 def save_kit_file(kitID, file):
@@ -35,7 +37,7 @@ def save_kit_file(kitID, file):
     object_key = '/'.join(['user_kits', str(kitID), filename])
     
     s3.Bucket(app.config['AWS_S3_BUCKET_NAME']).upload_fileobj(file, object_key, ExtraArgs={
-        'ContentType': 'application/pdf'
+        'ContentType': file.mimetype
     })
     
     return filename
