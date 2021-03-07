@@ -2,62 +2,72 @@
 {% block head %}{% endblock %}
 {% block title %}Browse{% endblock %}
 
-{% block main %}
-    <div class='content-section'>
-    <h2 class='heading'>Browse</h2>
+{% block body %}
+    <div class="container-fluid p-4 h-100">
+        <div class="row h-75">
+            <div class="col-3 content-section">
+                <form action="" method="get">
+                    <fieldset>
+                        <legend>Filters</legend>
+                        <div class='form-group mb-5'>
+                            {{ extendedSearchForm.sort_by.label(class='form=control-label') }} 
+                            {% if extendedSearchForm.sort_by.errors %}
+                                <!-- display errors !-->
+                                {{ extendedSearchForm.sort_by(class='form-control-lg is-invalid', autocomplete='off') }}
+                                <div class='invalid-feedback'>
+                                    {% for error in extendedSearchForm.sort_by.errors %}
+                                    <span>{{ error }}</span> 
+                                    {% endfor %}
+                                </div>
+                            {% else %} 
+                                {{ extendedSearchForm.sort_by(class='form-control-lg', autocomplete='off', autofocus=true) }}
+                                <small class='text-muted'>
+                                    {{ extendedSearchForm.sort_by.description }}
+                                </small>
+                            {% endif %}
+                        </div>
 
-    <form action='' method='GET'>
-        <div class='form-group'>
-            {{ extendedSearchForm.sort_by.label(class='form=control-label') }} 
+                        <div class='form-group'>
+                            {{ extendedSearchForm.from_user.label(class='form=control-label') }} 
+                            {% if extendedSearchForm.from_user.errors %}
+                                <!-- display errors !-->
+                                {{ extendedSearchForm.from_user(class='form-control form-control-lg is-invalid', autocomplete='off') }}
+                                <div class='invalid-feedback'>
+                                    {% for error in extendedSearchForm.from_user.errors %}
+                                    <span>{{ error }}</span> 
+                                    {% endfor %}
+                                </div>
+                            {% else %} 
+                                {{ extendedSearchForm.from_user(class='form-control form-control-lg', autocomplete='off', autofocus=true) }}
+                                <small class='text-muted'>
+                                    {{ extendedSearchForm.from_user.description }}
+                                </small>
+                            {% endif %}
+                        </div>
 
-            {% if extendedSearchForm.sort_by.errors %}
-                <!-- display errors !-->
-                {{ extendedSearchForm.sort_by(class='form-control form-control-lg is-invalid', autocomplete='off', autofocus=true) }}
-                <div class='invalid-feedback'>
-                    {% for error in extendedSearchForm.sort_by.errors %}
-                        <span>{{ error }}</span>
-                    {% endfor %}
-                </div>
-
-            {% else %}
-                {{ extendedSearchForm.sort_by(class='form-control form-control-lg', autocomplete='off', autofocus=true) }}
-            {% endif %}
-        </div>
-
-        <div class='form-group'>
-            {{ extendedSearchForm.query.label(class='form=control-label') }} 
-
-            {% if extendedSearchForm.query.errors %}
-                <!-- display errors !-->
-                {{ extendedSearchForm.query(class='form-control form-control-lg is-invalid', autocomplete='off', autofocus=true) }}
-                <div class='invalid-feedback'>
-                    {% for error in extendedSearchForm.query.errors %}
-                        <span>{{ error }}</span>
-                    {% endfor %}
-                </div>
-
-            {% else %}
-                {{ extendedSearchForm.query(class='form-control form-control-lg', autocomplete='off', autofocus=true) }}
-            {% endif %}
-        </div>
-
-    </form>
-
-    {% for article in results %}
-    <div class='separate-article'>
-        <a href='{{ url_for("article", article=article) }}'>
-            <h2 class='article-title'>{{ article.title }}</h2>
-        </a>
-        <div class='media-body'>
-            <div class='article-metadata'>
-                <span>
-                    <small class='text-muted'>Date uploaded: {{ article.date_uploaded.strftime('%Y-%m-%d') }}</small>
-                    <small class='text-muted'>Type: {{ article.file_type }}</small>
-                </span>
-                <p class='article-content'>{{ article.article_description }}</p>
+                        <div class='form-group'>
+                            {{ extendedSearchForm.from_category.label(class='form=control-label') }} 
+                            {% if extendedSearchForm.from_category.errors %}
+                                <!-- display errors !-->
+                                {{ extendedSearchForm.from_category(class='form-control-lg is-invalid', autocomplete='off') }}
+                                <div class='invalid-feedback'>
+                                    {% for error in extendedSearchForm.from_category.errors %}
+                                    <span>{{ error }}</span> 
+                                    {% endfor %}
+                                </div>
+                            {% else %} 
+                                {{ extendedSearchForm.from_category(class='form-control-lg', autocomplete='off', autofocus=true) }}
+                                <small class='text-muted'>
+                                    {{ extendedSearchForm.from_category.description }}
+                                </small>
+                            {% endif %}
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div class="col-9">
+                this is the search portion
             </div>
         </div>
     </div>
-    {% endfor %}
-</div>
 {% endblock %}

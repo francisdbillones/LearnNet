@@ -133,6 +133,9 @@ class ExtendedSearchForm(FlaskForm):
     query = StringField('Search', validators=[DataRequired(), Length(min=5, max=100)])
     sort_by = RadioField('Sort by', choices=[
         'Relevancy', 'Recency'
-    ])
-    school = StringField('School', validators=[Length(min=2, max=50)])
+    ], default='Relevancy')
+    from_user = StringField('From specific user', validators=[Length(max=20)])
+    from_category = SelectField('From specific category', choices=[
+            'Any category', 'Language', 'Mathematics', 'Science', 'Health', 'Physical Education', 'Art', 'Music', 'Other'
+    ], default='Any category')
     submit = SubmitField('Search')
