@@ -3,71 +3,123 @@
 {% block title %}Browse{% endblock %}
 
 {% block body %}
+<form action="" method="get" class='h-100'>
     <div class="container-fluid p-4 h-100">
-        <div class="row h-75">
-            <div class="col-3 content-section">
-                <form action="" method="get">
-                    <fieldset>
-                        <legend>Filters</legend>
-                        <div class='form-group mb-5'>
-                            {{ extendedSearchForm.sort_by.label(class='form=control-label') }} 
-                            {% if extendedSearchForm.sort_by.errors %}
-                                <!-- display errors !-->
-                                {{ extendedSearchForm.sort_by(class='form-control-lg is-invalid', autocomplete='off') }}
-                                <div class='invalid-feedback'>
-                                    {% for error in extendedSearchForm.sort_by.errors %}
-                                    <span>{{ error }}</span> 
-                                    {% endfor %}
-                                </div>
-                            {% else %} 
-                                {{ extendedSearchForm.sort_by(class='form-control-lg', autocomplete='off', autofocus=true) }}
-                                <small class='text-muted'>
-                                    {{ extendedSearchForm.sort_by.description }}
-                                </small>
-                            {% endif %}
-                        </div>
+        <div class="row h-100">
+            <div class="col-2 content-section h-50">
+                <fieldset>
+                    <legend>Filters</legend>
+                    <div class='form-group mb-5'>
+                        {{ extendedSearchForm.sort_by.label(class='form=control-label') }} 
+                        {% if extendedSearchForm.sort_by.errors %}
+                            <!-- display errors !-->
+                            {{ extendedSearchForm.sort_by(class='form-control-lg is-invalid', autocomplete='off') }}
+                            <div class='invalid-feedback'>
+                                {% for error in extendedSearchForm.sort_by.errors %}
+                                <span>{{ error }}</span> 
+                                {% endfor %}
+                            </div>
+                        {% else %} 
+                            {{ extendedSearchForm.sort_by(class='form-control-lg', autocomplete='off', autofocus=true) }}
+                            <small class='text-muted'>
+                                {{ extendedSearchForm.sort_by.description }}
+                            </small>
+                        {% endif %}
+                    </div>
 
-                        <div class='form-group'>
-                            {{ extendedSearchForm.from_user.label(class='form=control-label') }} 
-                            {% if extendedSearchForm.from_user.errors %}
-                                <!-- display errors !-->
-                                {{ extendedSearchForm.from_user(class='form-control form-control-lg is-invalid', autocomplete='off') }}
-                                <div class='invalid-feedback'>
-                                    {% for error in extendedSearchForm.from_user.errors %}
-                                    <span>{{ error }}</span> 
-                                    {% endfor %}
-                                </div>
-                            {% else %} 
-                                {{ extendedSearchForm.from_user(class='form-control form-control-lg', autocomplete='off', autofocus=true) }}
-                                <small class='text-muted'>
-                                    {{ extendedSearchForm.from_user.description }}
-                                </small>
-                            {% endif %}
-                        </div>
+                    <div class='form-group'>
+                        {{ extendedSearchForm.from_user.label(class='form=control-label') }} 
+                        {% if extendedSearchForm.from_user.errors %}
+                            <!-- display errors !-->
+                            {{ extendedSearchForm.from_user(class='form-control form-control-lg is-invalid', autocomplete='off') }}
+                            <div class='invalid-feedback'>
+                                {% for error in extendedSearchForm.from_user.errors %}
+                                <span>{{ error }}</span> 
+                                {% endfor %}
+                            </div>
+                        {% else %} 
+                            {{ extendedSearchForm.from_user(class='form-control form-control-lg', autocomplete='off', autofocus=true) }}
+                            <small class='text-muted'>
+                                {{ extendedSearchForm.from_user.description }}
+                            </small>
+                        {% endif %}
+                    </div>
 
-                        <div class='form-group'>
-                            {{ extendedSearchForm.from_category.label(class='form=control-label') }} 
-                            {% if extendedSearchForm.from_category.errors %}
-                                <!-- display errors !-->
-                                {{ extendedSearchForm.from_category(class='form-control-lg is-invalid', autocomplete='off') }}
-                                <div class='invalid-feedback'>
-                                    {% for error in extendedSearchForm.from_category.errors %}
-                                    <span>{{ error }}</span> 
-                                    {% endfor %}
-                                </div>
-                            {% else %} 
-                                {{ extendedSearchForm.from_category(class='form-control-lg', autocomplete='off', autofocus=true) }}
-                                <small class='text-muted'>
-                                    {{ extendedSearchForm.from_category.description }}
-                                </small>
-                            {% endif %}
-                        </div>
-                    </fieldset>
-                </form>
+                    <div class='form-group'>
+                        {{ extendedSearchForm.from_category.label(class='form=control-label') }} 
+                        {% if extendedSearchForm.from_category.errors %}
+                            <!-- display errors !-->
+                            {{ extendedSearchForm.from_category(class='form-control-lg is-invalid', autocomplete='off') }}
+                            <div class='invalid-feedback'>
+                                {% for error in extendedSearchForm.from_category.errors %}
+                                <span>{{ error }}</span> 
+                                {% endfor %}
+                            </div>
+                        {% else %} 
+                            {{ extendedSearchForm.from_category(class='form-control-lg', autocomplete='off', autofocus=true) }}
+                            <small class='text-muted'>
+                                {{ extendedSearchForm.from_category.description }}
+                            </small>
+                        {% endif %}
+                    </div>
+                </fieldset>
             </div>
-            <div class="col-9">
-                this is the search portion
+            <div class="col-10 content-section">
+                <fieldset>
+                    <legend>Search our index.</legend>
+                    <div class='form-group'>
+                        {% if extendedSearchForm.query.errors %}
+                            <!-- display errors !-->
+                            <div class='input-group'>
+                                {{ extendedSearchForm.query(class='form-control form-control-lg is-invalid', autocomplete='off', autofocus=true, type='search') }}
+                                <button type='submit' class='btn btn-outline-success'>
+                                    <i class='fa fa-search'></i>
+                                </button>
+                            </div>
+                            <div class='invalid-feedback'>
+                                {% for error in extendedSearchForm.query.errors %}
+                                <span>{{ error }}</span> 
+                                {% endfor %}
+                            </div>
+                        {% else %} 
+                            <div class='input-group'>
+                                {{ extendedSearchForm.query(class='form-control form-control-lg', autocomplete='off', autofocus=true, type='search') }}
+                                <button type='submit' class='btn btn-outline-success'>
+                                    <i class='fa fa-search'></i>
+                                </button>
+                            </div>
+                            <small class='text-muted'>
+                                {{ extendedSearchForm.query.description }}
+                            </small>
+                        {% endif %}
+                    </div>
+                </fieldset>
+
+                {% for kit in result_kits %}
+                <article class='media content-section'>
+                    <a href='{{ url_for("account", username=kit.owner.username) }}'>
+                        <img class='rounded-circle article-img' src='{{ s3.meta.client.generate_presigned_url("get_object",
+                        Params={
+                            "Bucket": app.config["AWS_S3_BUCKET_NAME"],
+                            "Key": "/".join(["images", "profile_pictures", kit.owner.pfp_file]),
+                            "ResponseContentType": "images/jpeg"
+                        }
+                        ) }}' height='50px'>
+                    </a>
+                    <div class='media-body'>
+                        <div class='article-metadata'>
+                        <a class='mr-2' href='{{ url_for("account", username=kit.owner.username) }}'>{{ kit.owner.username }}</a>
+                        <small class='text-muted'>{{ kit.category }}</small>
+                        {% for tag in kit.tags %}
+                        <span class='badge badge-pill badge-primary'>{{ tag.tag }}</span>
+                        {% endfor %}
+                        </div>
+                        <h2><a class='article-title' href='{{ url_for("view_kit", kitID=kit.id) }}'>{{ kit.title }}</a></h2>
+                    </div>
+                </article>
+                {% endfor %}
             </div>
         </div>
     </div>
+</form>
 {% endblock %}

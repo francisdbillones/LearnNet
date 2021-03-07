@@ -1,6 +1,8 @@
 from flask import render_template, redirect, url_for, flash, request, jsonify, send_from_directory
 from flask_login import login_user, logout_user, login_required, current_user
 
+from sqlalchemy.sql.expression import desc
+
 from werkzeug.utils import secure_filename
 
 from learn_net.forms import *
@@ -132,12 +134,38 @@ def edit_account(username):
     
     return render_template('edit_account.html', updateAccountForm=updateAccountForm)
 
-@app.route('/browse', methods=['GET', 'POST'])
+@app.route('/browse', methods=['GET'])
 def browse():
     # browse index
     # TODO browse route
     
-    extendedSearchForm = ExtendedSearchForm()
+    extendedSearchForm = ExtendedSearchForm(request.args, meta={
+        'csrf':False
+    })
+
+    if request.args:
+        if extendedSearchForm.validate():
+            query = request.args.get('query')
+            from_user = request.args.get('from_user')
+            from_category = request.args.get('from_category')
+            sort_by = request.args.get('sort_by')
+            
+            result_kits = Kit.query.filter(Kit.title.like(f'%{query}%')).join(KitFile)
+            
+            if from_user:
+                result_kits = result_kits.\
+                    filter(Kit.owner.\
+                    has(User.username.\
+                    like(f'%{from_user}%')))
+            
+            if from_category != 'Any category':
+                result_kits = result_kits.filter(Kit.category == from_category)
+
+            if sort_by == 'Recency':
+                result_kits = result_kits\
+                    .order_by(desc(KitFile.date_uploaded))
+            
+            return render_template('browse.html', extendedSearchForm=extendedSearchForm, result_kits=result_kits)
     
     return render_template('browse.html', extendedSearchForm=extendedSearchForm)
 

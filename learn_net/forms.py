@@ -130,7 +130,7 @@ class SimpleSearchForm(FlaskForm):
 
 # form for users to search + filter
 class ExtendedSearchForm(FlaskForm):
-    query = StringField('Search', validators=[DataRequired(), Length(min=5, max=100)])
+    query = StringField('Search our index.', validators=[DataRequired(), Length(min=2, max=100)])
     sort_by = RadioField('Sort by', choices=[
         'Relevancy', 'Recency'
     ], default='Relevancy')
