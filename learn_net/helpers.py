@@ -16,21 +16,20 @@ def save_profile_picture(picture_file):
         new_filename = hexed_filename + extension
         current_user.pfp_file = new_filename
         
-        object_key = os.path.join('images', 'profile_pictures', new_filename)
+        object_key = '/'.join(['images', 'profile_pictures', new_filename])
     else:
-        object_key = os.path.join('images', 'profile_pictures', current_user.pfp_file)
-    
-    local_path = os.path.join(app.root_path, 'static', object_key)
+        object_key = '/'.join(['images', 'profile_pictures', current_user.pfp_file])
     
     image = Image.open(picture_file)
     image.thumbnail((125, 125))
-    image.save(local_path)
 
-    s3.Bucket(app.config['AWS_S3_BUCKET_NAME']).upload_file(local_path, object_key)
+    s3.Bucket(app.config['AWS_S3_BUCKET_NAME']).upload_fileobj(picture_file, object_key, ExtraArgs={
+        'ContentType': 'image/jpeg'
+    })
 
 def save_kit_file(kitID, file):
     filename = secure_filename(file.filename)
-    object_key = os.path.join('user_kits', str(kitID), filename)
+    object_key = '/'.join(['user_kits', str(kitID), filename])
     
     s3.Bucket(app.config['AWS_S3_BUCKET_NAME']).upload_fileobj(file, object_key, ExtraArgs={
         'ContentType': 'application/pdf'
@@ -46,8 +45,8 @@ def rename_kit_file(kitID, old_filename, new_filename):
         old_ext = os.path.splitext(old_filename)[1]
         new_filename = ''.join([new_filename, old_ext])
 
-    old_object_key = os.path.join('user_kits', str(kitID), old_filename)    
-    new_object_key = os.path.join('user_kits', str(kitID), new_filename)
+    old_object_key = '/'.join(['user_kits', str(kitID), old_filename])    
+    new_object_key = '/'.join(['user_kits', str(kitID), new_filename])
     
     # copy object from old path to new path
     copy_source = {
@@ -63,7 +62,7 @@ def rename_kit_file(kitID, old_filename, new_filename):
 
 def delete_kit_file(kitID, file):
     filename = secure_filename(file.filename)
-    object_key = os.path.join(app.root_path, 'static', 'user_kits', str(kitID), filename)
+    object_key = '/'.join(['user_kits', str(kitID), filename])
     
     # remove the object
     s3.Object(app.config['AWS_S3_BUCKET_NAME'], object_key).delete()

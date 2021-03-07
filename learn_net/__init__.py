@@ -24,9 +24,6 @@ loginManager.login_message_category = 'warning'
 # Ensure templates are auto-reloaded
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 
-# allow os.path.join to be accessed from within templates
-app.jinja_env.filters['os_path_join'] = lambda paths: os.path.join(*paths)
-
 # set session type
 app.config['SESSION_TYPE'] = 'filesystem'
 
