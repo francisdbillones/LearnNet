@@ -28,9 +28,9 @@ def save_profile_picture(picture_file):
         resized_image.save(final_picture, format=extension)
         final_picture.seek(0)
         
-    s3.Bucket(app.config['AWS_S3_BUCKET_NAME']).upload_fileobj(final_picture, object_key, ExtraArgs={
-        'ContentType': picture_file.mimetype
-    })
+        s3.Bucket(app.config['AWS_S3_BUCKET_NAME']).upload_fileobj(final_picture, object_key, ExtraArgs={
+            'ContentType': picture_file.mimetype
+        })
 
 def save_kit_file(kitID, file):
     filename = secure_filename(file.filename)
