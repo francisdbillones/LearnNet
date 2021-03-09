@@ -1,3 +1,4 @@
+import re
 from flask import render_template, redirect, url_for, flash, request, jsonify, send_from_directory
 from flask_login import login_user, logout_user, login_required, current_user
 
@@ -145,29 +146,28 @@ def browse():
     
     result_kits = []
 
-    if request.args:
+    if request.args.get('query') != '':
+        
+        query = request.args.get('query')
+        
+        # join with kit file, to filter out kits that don't yet have files in them
+        result_kits = Kit.query.filter(
+            Kit.title.like(f'%{query}%')).\
+            join(KitFile)
+        
+        show_bad_search_image = False if result_kits.count() != 0 else True
         if extendedSearchForm.validate():
-            query = request.args.get('query')
             from_user = request.args.get('from_user')
             from_category = request.args.get('from_category')
             sort_by = request.args.get('sort_by')
             
-            # join with kit file, to filter out kits that don't yet have files in them
-            result_kits = Kit.query.filter(
-                Kit.title.like(f'%{query}%')).\
-                join(KitFile)
-            
-            if from_user:
+            if current_user.is_authenticated:
                 result_kits = result_kits.\
-                        filter(Kit.owner.\
-                        has(User.username.\
-                        like(f'%{from_user}%')))
+                        filter(Kit.owner.has(User.id != current_user.id))
             
-                # if a user has an account and explicitly enters their own username, return their kits. 
-                if current_user.is_authenticated:
-                    if from_user != current_user.username:
-                        result_kits = result_kits.\
-                            filter(Kit.owner.has(User.id != current_user.id))
+            if from_user != '':
+                result_kits = result_kits.\
+                    filter(Kit.owner.has(User.username.like(f'%{from_user}%')))
                 
             if from_category != 'Any category':
                 result_kits = result_kits.filter(Kit.category == from_category)
@@ -176,13 +176,13 @@ def browse():
                 result_kits = result_kits\
                     .order_by(desc(KitFile.date_uploaded))
     
-            show_bad_search_image = False if result_kits.count() else True
-            
-            return render_template('browse.html', extendedSearchForm=extendedSearchForm, result_kits=result_kits, show_bad_search_image=show_bad_search_image)
+            show_bad_search_image = False if result_kits.count() != 0 else True
+        
+        return render_template('browse.html', extendedSearchForm=extendedSearchForm, result_kits=result_kits, show_bad_search_image=show_bad_search_image)
 
     return render_template('browse.html', extendedSearchForm=extendedSearchForm, result_kits=result_kits, show_bad_search_image=False)
     
-
+    
 @app.route('/kits')
 @login_required
 def kits():
