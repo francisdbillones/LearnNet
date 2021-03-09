@@ -156,7 +156,6 @@ def browse():
             join(KitFile)
         
         show_bad_search_image = False if result_kits.count() != 0 else True
-        print(result_kits.count())
         if extendedSearchForm.validate():
             from_user = request.args.get('from_user')
             from_category = request.args.get('from_category')
@@ -178,7 +177,6 @@ def browse():
                     .order_by(desc(KitFile.date_uploaded))
     
             show_bad_search_image = False if result_kits.count() != 0 else True
-            print(result_kits.count())
         
         return render_template('browse.html', extendedSearchForm=extendedSearchForm, result_kits=result_kits, show_bad_search_image=show_bad_search_image)
 
