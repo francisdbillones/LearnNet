@@ -95,6 +95,13 @@
                     </div>
                 </fieldset>
 
+                {% if show_bad_search_image %}
+                <h3 class='text-center'>We couldn't find any kits matching your search.</h3>
+                <img class='mx-auto my-5 d-block img-fluid rounded-circle' src='{{ bad_search_image_url }}'>
+                <small class='muted text-center d-block'>Look! A barren wasteland.</small>
+
+                {% else %}
+
                 {% for kit in result_kits %}
                 <article class='media content-section'>
                     <a href='{{ url_for("account", username=kit.owner.username) }}'>
@@ -118,6 +125,7 @@
                     </div>
                 </article>
                 {% endfor %}
+                {% endif %}
             </div>
         </div>
     </div>

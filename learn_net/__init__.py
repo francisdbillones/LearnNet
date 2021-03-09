@@ -70,4 +70,14 @@ def inject_s3():
 def inject_app():
     return dict(app=app)
 
+@app.context_processor
+def inject_bad_search_image_url():
+    url = s3.meta.client.generate_presigned_url('get_object', Params={
+        'Bucket': app.config['AWS_S3_BUCKET_NAME'],
+        'Key': '/'.join(['images', 'barren-wasteland.jpg']),
+        'ResponseContentType': 'image/jpeg'
+    })
+    
+    return dict(bad_search_image_url=url)
+
 from learn_net import routes

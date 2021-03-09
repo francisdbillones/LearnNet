@@ -142,6 +142,8 @@ def browse():
     extendedSearchForm = ExtendedSearchForm(request.args, meta={
         'csrf':False
     })
+    
+    result_kits = []
 
     if request.args:
         if extendedSearchForm.validate():
@@ -173,10 +175,13 @@ def browse():
             if sort_by == 'Recency':
                 result_kits = result_kits\
                     .order_by(desc(KitFile.date_uploaded))
-            
-            return render_template('browse.html', extendedSearchForm=extendedSearchForm, result_kits=result_kits)
     
-    return render_template('browse.html', extendedSearchForm=extendedSearchForm)
+            show_bad_search_image = False if result_kits.count() else True
+            
+            return render_template('browse.html', extendedSearchForm=extendedSearchForm, result_kits=result_kits, show_bad_search_image=show_bad_search_image)
+
+    return render_template('browse.html', extendedSearchForm=extendedSearchForm, result_kits=result_kits, show_bad_search_image=False)
+    
 
 @app.route('/kits')
 @login_required
