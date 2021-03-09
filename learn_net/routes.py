@@ -145,8 +145,8 @@ def browse():
     })
     
     result_kits = []
-
-    if request.args.get('query') != '':
+    
+    if request.args.get('query') != '' and request.args.get('query') is not None:
         
         query = request.args.get('query')
         
