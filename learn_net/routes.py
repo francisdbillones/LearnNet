@@ -150,13 +150,23 @@ def browse():
             from_category = request.args.get('from_category')
             sort_by = request.args.get('sort_by')
             
-            result_kits = Kit.query.filter(Kit.title.like(f'%{query}%')).join(KitFile)
+            # join with kit file, to filter out kits that don't yet have files in them
+            result_kits = Kit.query.filter(
+                Kit.title.like(f'%{query}%')).\
+                join(KitFile)
             
             if from_user:
                 result_kits = result_kits.\
-                    filter(Kit.owner.\
-                    has(User.username.\
-                    like(f'%{from_user}%')))
+                        filter(Kit.owner.\
+                        has(User.username.\
+                        like(f'%{from_user}%')))
+            
+                # if a user has an account and explicitly enters their own username, return their kits. 
+                if current_user.is_authenticated:
+                    if from_user != current_user.username:
+                        result_kits = result_kits.\
+                            filter(Kit.owner.has(User.id != current_user.id))
+                
             
             if from_category != 'Any category':
                 result_kits = result_kits.filter(Kit.category == from_category)
