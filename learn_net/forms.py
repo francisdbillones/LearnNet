@@ -123,11 +123,6 @@ class UploadKitFilesForm(FlaskForm):
             if len(file.filename) > 30:
                 raise ValidationError(f'The length of one of your file\'s names, particularly "{file.filename}", is too long.')
 
-# simple form with text search only
-class SimpleSearchForm(FlaskForm):
-    query = StringField('Search query', validators=[DataRequired(), Length(min=5, max=100)])
-    submit = SubmitField('Search')
-
 # form for users to search + filter
 class ExtendedSearchForm(FlaskForm):
     query = StringField('Search our index.', validators=[DataRequired(), Length(min=2, max=100)])
