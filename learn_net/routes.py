@@ -156,6 +156,7 @@ def browse():
             join(KitFile)
         
         show_bad_search_image = False if result_kits.count() != 0 else True
+        print(result_kits.count())
         if extendedSearchForm.validate():
             from_user = request.args.get('from_user')
             from_category = request.args.get('from_category')
@@ -165,18 +166,19 @@ def browse():
                 result_kits = result_kits.\
                         filter(Kit.owner.has(User.id != current_user.id))
             
-            if from_user != '':
+            if from_user != '' and from_user is not None:
                 result_kits = result_kits.\
                     filter(Kit.owner.has(User.username.like(f'%{from_user}%')))
                 
-            if from_category != 'Any category':
+            if from_category != 'Any category' and from_category is not None:
                 result_kits = result_kits.filter(Kit.category == from_category)
 
-            if sort_by == 'Recency':
+            if sort_by == 'Recency' and sort_by is not None:
                 result_kits = result_kits\
                     .order_by(desc(KitFile.date_uploaded))
     
             show_bad_search_image = False if result_kits.count() != 0 else True
+            print(result_kits.count())
         
         return render_template('browse.html', extendedSearchForm=extendedSearchForm, result_kits=result_kits, show_bad_search_image=show_bad_search_image)
 
