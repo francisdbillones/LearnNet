@@ -167,7 +167,6 @@ def browse():
                         result_kits = result_kits.\
                             filter(Kit.owner.has(User.id != current_user.id))
                 
-            
             if from_category != 'Any category':
                 result_kits = result_kits.filter(Kit.category == from_category)
 
@@ -178,33 +177,6 @@ def browse():
             return render_template('browse.html', extendedSearchForm=extendedSearchForm, result_kits=result_kits)
     
     return render_template('browse.html', extendedSearchForm=extendedSearchForm)
-
-@app.route('/browse/search')
-def search():
-    # search for kits
-    query = request.args.get('query')
-    
-    if not query or len(query) > 30:
-        if not request.referrer:
-            return redirect(url_for('index'))
-        return redirect(request.referrer)
-    
-    if current_user.is_authenticated:
-        result_kits = Kit.query.filter(Kit.owner.has(User.id != current_user.id))\
-            .filter(Kit.title.like(f'%{query}%'))
-    else:
-        result_kits = Kit.query.filter(Kit.title.like(f'%{query}%'))
-
-    if not result_kits.count():
-        flash('We couldn\'t find any kits matching your search.', 'warning')
-        
-    null_search_image_url = s3.meta.client.generate_presigned_url("get_object", Params={
-            "Bucket": app.config["AWS_S3_BUCKET_NAME"],
-            "Key": '/'.join(['images', 'barren-wasteland.jpg']),
-            "ResponseContentType": "image/jpeg"
-        })
-    
-    return render_template('search_results.html', result_kits=result_kits.paginate(), null_search_image_url=null_search_image_url)
 
 @app.route('/kits')
 @login_required
