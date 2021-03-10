@@ -1,5 +1,4 @@
 from learn_net import s3
-from learn_net.models import Kit
 from werkzeug.utils import secure_filename
 from learn_net import app
 from PIL import Image
