@@ -175,7 +175,7 @@ def browse():
     
             show_bad_search_image = result_kits.count() == 0
     
-        result_kits = result_kits.paginate(page=page, per_page=4)
+        result_kits = result_kits.paginate(page=page, per_page=10)
         
         return render_template('browse.html', extendedSearchForm=extendedSearchForm, result_kits=result_kits, show_bad_search_image=show_bad_search_image)
     
