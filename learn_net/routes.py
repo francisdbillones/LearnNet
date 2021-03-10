@@ -175,7 +175,13 @@ def browse():
     
             show_bad_search_image = result_kits.count() == 0
     
-        result_kits = result_kits.paginate(page=page, per_page=10)
+        result_kits = result_kits.paginate(page=page, per_page=10, error_out=False)
+        
+        if not result_kits.items:
+            flash('That page does not exist.', 'danger')
+            if request.referrer:
+                return redirect(request.referrer)
+            return redirect(url_for('index'))
         
         return render_template('browse.html', extendedSearchForm=extendedSearchForm, result_kits=result_kits, show_bad_search_image=show_bad_search_image)
     
