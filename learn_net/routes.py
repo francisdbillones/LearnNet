@@ -147,12 +147,12 @@ def browse():
     if request.args.get('query') != '' and request.args.get('query') is not None:
         
         query = request.args.get('query')
+        page = request.args.get('page', 1, type=int)
         
         # join with kit file, to filter out kits that don't yet have files in them
         result_kits = Kit.query.filter(
-            Kit.title.like(f'%{query}%')).\
-            join(KitFile)
-        
+            Kit.title.like(f'%{query}%')).filter(Kit.files.any())
+
         if extendedSearchForm.validate():
             from_user = request.args.get('from_user')
             from_category = request.args.get('from_category')
@@ -174,9 +174,11 @@ def browse():
                     .order_by(desc(KitFile.date_uploaded))
     
             show_bad_search_image = result_kits.count() == 0
+    
+        result_kits = result_kits.paginate(page=page, per_page=4)
         
         return render_template('browse.html', extendedSearchForm=extendedSearchForm, result_kits=result_kits, show_bad_search_image=show_bad_search_image)
-
+    
     # if user is just requesting the page, return an empty list for the results
     return render_template('browse.html', extendedSearchForm=extendedSearchForm, result_kits=[], show_bad_search_image=False)
     

@@ -102,7 +102,7 @@
 
                 {% else %}
 
-                {% for kit in result_kits %}
+                {% for kit in result_kits.items %}
                 <article class='media content-section'>
                     <a href='{{ url_for("account", username=kit.owner.username) }}'>
                         <img class='rounded-circle article-img' src='{{ s3.meta.client.generate_presigned_url("get_object",
