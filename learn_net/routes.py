@@ -144,8 +144,6 @@ def browse():
         'csrf':False
     })
     
-    result_kits = []
-    
     if request.args.get('query') != '' and request.args.get('query') is not None:
         
         query = request.args.get('query')
@@ -155,7 +153,6 @@ def browse():
             Kit.title.like(f'%{query}%')).\
             join(KitFile)
         
-        show_bad_search_image = False if result_kits.count() != 0 else True
         if extendedSearchForm.validate():
             from_user = request.args.get('from_user')
             from_category = request.args.get('from_category')
@@ -176,11 +173,12 @@ def browse():
                 result_kits = result_kits\
                     .order_by(desc(KitFile.date_uploaded))
     
-            show_bad_search_image = False if result_kits.count() != 0 else True
+            show_bad_search_image = result_kits.count() == 0
         
         return render_template('browse.html', extendedSearchForm=extendedSearchForm, result_kits=result_kits, show_bad_search_image=show_bad_search_image)
 
-    return render_template('browse.html', extendedSearchForm=extendedSearchForm, result_kits=result_kits, show_bad_search_image=False)
+    # if user is just requesting the page, return an empty list for the results
+    return render_template('browse.html', extendedSearchForm=extendedSearchForm, result_kits=[], show_bad_search_image=False)
     
     
 @app.route('/kits')
