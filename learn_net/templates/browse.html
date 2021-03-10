@@ -66,7 +66,31 @@
             </div>
             <div class="col-10 content-section">
                 <fieldset>
-                    <legend>Search our index.</legend>
+                    <legend class='text-center'>
+                    {% if result_kits %}
+                        {% if result_kits.has_prev %}
+                        <a href='{{ url_for("browse", 
+                        page = result_kits.prev_num,
+                        query = request.args.get("query"),
+                        from_user = request.args.get("from_user"),
+                        from_category = request.args.get("from_category"),
+                        sort_by = request.args.get("sort_by")
+                        ) }}' class="btn btn-outline-info float-left"> Previous </a>
+                        {% endif %}
+                        Search our index.
+                        {% if result_kits.has_next %}
+                        <a href='{{ url_for("browse", 
+                        page = result_kits.next_num,
+                        query = request.args.get("query"),
+                        from_user = request.args.get("from_user"),
+                        from_category = request.args.get("from_category"),
+                        sort_by = request.args.get("sort_by")
+                        ) }}' class="btn btn-outline-info float-right"> Next </a>
+                        {% endif %}
+                    {% else %}
+                    Search our index.
+                    {% endif %}
+                    </legend>
                     <div class='form-group'>
                         {% if extendedSearchForm.query.errors %}
                             <!-- display errors !-->
