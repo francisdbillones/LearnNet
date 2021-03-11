@@ -1,4 +1,4 @@
-from flask import Flask, session, url_for
+from flask import Flask
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -28,7 +28,7 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['SESSION_TYPE'] = 'filesystem'
 
 # set maximum file size that a user can upload
-app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024; # 50 MB
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50 MB
 
 # set maximum number of files a kit can have
 app.config['MAX_KIT_FILE_COUNT'] = 10
@@ -55,6 +55,8 @@ s3 = boto3.resource(
 Session(app)
 
 # Ensure responses aren't cached
+
+
 @app.after_request
 def after_request(response):
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
@@ -62,13 +64,16 @@ def after_request(response):
     response.headers['Pragma'] = 'no-cache'
     return response
 
+
 @app.context_processor
 def inject_s3():
     return dict(s3=s3)
 
+
 @app.context_processor
 def inject_app():
     return dict(app=app)
+
 
 @app.context_processor
 def inject_bad_search_image_url():
@@ -77,7 +82,5 @@ def inject_bad_search_image_url():
         'Key': '/'.join(['images', 'barren-wasteland.jpg']),
         'ResponseContentType': 'image/jpeg'
     })
-    
-    return dict(bad_search_image_url=url)
 
-from learn_net import routes
+    return dict(bad_search_image_url=url)
