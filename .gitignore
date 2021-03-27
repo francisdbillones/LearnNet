@@ -4,6 +4,7 @@
 # visual studio code
 .vscode
 .vs
+learn-net.code-workspace
 
 # user's content
 user_kits/
