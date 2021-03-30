@@ -3,9 +3,11 @@ from werkzeug.utils import secure_filename
 from learn_net import app
 from PIL import Image
 from flask_login import current_user
+from flask import request, redirect
 
 import secrets
 import os
+import functools
 import io
 
 
@@ -85,3 +87,13 @@ def allowed_file(filename):
     extension = os.path.splitext(filename)[1][1::]
 
     return extension in app.config['ALLOWED_EXTENSIONS']
+
+
+def sslify(route):
+    @functools.wraps(route)
+    def wrapper_sslify(*args, **kwargs):
+        protocol, url = request.url.split('://')
+        if protocol == 'http':
+            return redirect(f'https://{url}')
+        return route(*args, **kwargs)
+    return wrapper_sslify
