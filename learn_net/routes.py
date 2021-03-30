@@ -20,6 +20,7 @@ def index():
 
 
 @app.route('/signup', methods=['GET', 'POST'])
+@sslify
 def signup():
     # create a new user, then sign them in
 
@@ -44,6 +45,7 @@ def signup():
 
 
 @app.route("/signin", methods=['GET', 'POST'])
+@sslify
 def signin():
     # sign in user
 
@@ -66,6 +68,7 @@ def signin():
 
 
 @app.route('/signout')
+@sslify
 @login_required
 def signout():
     # sign out user
@@ -78,6 +81,7 @@ def signout():
 
 
 @app.route('/<string:username>', methods=['GET', 'POST'])
+@sslify
 def account(username):
     # view account information
 
@@ -91,6 +95,7 @@ def account(username):
 
 
 @app.route('/<string:username>/edit', methods=['GET', 'POST'])
+@sslify
 @login_required
 def edit_account(username):
     user = User.query.filter_by(username=username).first()
@@ -141,6 +146,7 @@ def edit_account(username):
 
 
 @app.route('/browse', methods=['GET'])
+@sslify
 def browse():
     # browse index
     # TODO browse route
@@ -198,6 +204,7 @@ def browse():
 
 
 @app.route('/kits')
+@sslify
 @login_required
 def kits():
     # view user's kits, saved kits, favourited kits, etc.
@@ -208,6 +215,7 @@ def kits():
 
 
 @app.route('/kits/create', methods=['GET', 'POST'])
+@sslify
 @login_required
 def create_kit():
     # allow users to create kit
@@ -238,6 +246,7 @@ def create_kit():
 
 
 @app.route('/kits/<int:kitID>', methods=['GET', 'POST'])
+@sslify
 def view_kit(kitID):
     # view kit information
 
@@ -280,6 +289,7 @@ def view_kit(kitID):
 
 
 @app.route('/kits/<int:kitID>/edit', methods=['GET', 'POST'])
+@sslify
 @login_required
 def edit_kit(kitID):
     kit = Kit.query.filter_by(id=kitID).first()
@@ -337,6 +347,7 @@ def edit_kit(kitID):
 
 
 @app.route('/kits/<int:kitID>/delete', methods=['POST'])
+@sslify
 @login_required
 def delete_kit(kitID):
     kit = Kit.query.filter_by(id=kitID).first()
@@ -378,6 +389,7 @@ def delete_kit(kitID):
 
 
 @app.route('/kits/<int:kitID>/delete/<path:filename>')
+@sslify
 @login_required
 def delete_kit_file(kitID, filename):
     kit = Kit.query.filter_by(id=kitID).first()
@@ -416,6 +428,7 @@ def delete_kit_file(kitID, filename):
 
 
 @app.route('/getusername')
+@sslify
 def getusername():
     email = request.args.get('email')
     user = User.query.filter_by(email=email).first()
