@@ -4,7 +4,7 @@ from flask_login import current_user, login_required, login_user, logout_user
 from sqlalchemy.sql.expression import desc
 from werkzeug.utils import secure_filename
 
-from learn_net import app, bcrypt, db, s3
+from learn_net import app, bcrypt, db, s3, session
 from learn_net.helpers import (rename_kit_file, save_kit_file,
                                save_profile_picture)
 from learn_net.models import Kit, KitFile, KitTag, User
@@ -56,8 +56,8 @@ def signin():
             next_page = request.args.get('next')
             flash('Successfully signed in!', 'success')
 
-            if request.args.get('next'):
-                return redirect(request.args.get('next'))
+            if next_page:
+                return redirect(next_page)
             return redirect(url_for('index'))
         else:
             flash('Error signing in. Check your password.', 'danger')
@@ -135,7 +135,8 @@ def edit_account(username):
         updateAccountForm.username.data = current_user.username
         updateAccountForm.email.data = current_user.email
 
-    return render_template('edit_account.html', updateAccountForm=updateAccountForm)
+    return render_template('edit_account.html',
+                           updateAccountForm=updateAccountForm)
 
 
 @app.route('/browse', methods=['GET'])
@@ -147,12 +148,14 @@ def browse():
         'csrf': False
     })
 
-    if request.args.get('query') != '' and request.args.get('query') is not None:
+    query = request.args.get('query')
 
-        query = request.args.get('query')
+    if query != '' and query is not None:
+
         page = request.args.get('page', 1, type=int)
 
-        # join with kit file, to filter out kits that don't yet have files in them
+        # join with kit file,
+        # to filter out kits that don't yet have files in them
         result_kits = Kit.query.filter(
             Kit.title.like(f'%{query}%')).filter(Kit.files.any())
 
@@ -181,10 +184,16 @@ def browse():
         result_kits = result_kits.paginate(
             page=page, per_page=10, error_out=False)
 
-        return render_template('browse.html', extendedSearchForm=extendedSearchForm, result_kits=result_kits, show_bad_search_image=show_bad_search_image)
+        return render_template('browse.html',
+                               extendedSearchForm=extendedSearchForm,
+                               result_kits=result_kits,
+                               show_bad_search_image=show_bad_search_image)
 
     # if user is just requesting the page, return an empty list for the results
-    return render_template('browse.html', extendedSearchForm=extendedSearchForm, result_kits=[], show_bad_search_image=False)
+    return render_template('browse.html',
+                           extendedSearchForm=extendedSearchForm,
+                           result_kits=[],
+                           show_bad_search_image=False)
 
 
 @app.route('/kits')
@@ -212,7 +221,8 @@ def create_kit():
             category=createKitForm.category.data
         )
         db.session.add(kit)
-        db.session.flush()  # do this so that kit.id is generated without having to commit first
+        db.session.flush()
+        # flush so that kit.id is generated without having to commit first
 
         for tag in createKitForm.tags.data.split(','):
             kitTag = KitTag(tag=tag, kit_id=kit.id)
@@ -239,14 +249,16 @@ def view_kit(kitID):
     uploadKitFilesForm = UploadKitFilesForm()
 
     if uploadKitFilesForm.validate_on_submit():
-        # check that the files the user uploaded doesn't exceed maximum number of files allowed
+        # check that the files the user uploaded
+        # doesn't exceed maximum number of files allowed
         total_file_count = len(kit.files) + len(uploadKitFilesForm.files.data)
         if total_file_count > app.config['MAX_KIT_FILE_COUNT']:
             flash('A kit can only have a maximum of 10 files.', 'warning')
             return redirect(url_for('kits'))
 
         for f in uploadKitFilesForm.files.data:
-            if secure_filename(f.filename) in [file.filename for file in kit.files]:
+            filename = secure_filename(f.filename)
+            if filename in [file.filename for file in kit.files]:
                 flash(
                     'That file already exists in this kit. If it doesn\'t, check the filename.', 'danger')
                 return redirect(url_for('view_kit', kitID=kitID))
@@ -260,7 +272,10 @@ def view_kit(kitID):
     for file in kit.files:
         file.key = '/'.join(['user_kits', str(kit.id), file.filename])
 
-    return render_template('view_kit.html', kit=kit, uploadKitFilesForm=uploadKitFilesForm, files=kit.files)
+    return render_template('view_kit.html',
+                           kit=kit,
+                           uploadKitFilesForm=uploadKitFilesForm,
+                           files=kit.files)
 
 
 @app.route('/kits/<int:kitID>/edit', methods=['GET', 'POST'])
@@ -298,7 +313,9 @@ def edit_kit(kitID):
         for file in kit.files:
             if file.filename != editKitForm[f'{file.filename}-filename'].data:
                 file.filename = rename_kit_file(
-                    kitID, file.filename, editKitForm[f'{file.filename}-filename'].data)
+                    kitID,
+                    file.filename,
+                    editKitForm[f'{file.filename}-filename'].data)
 
         db.session.commit()
 

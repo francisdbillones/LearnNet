@@ -52,7 +52,7 @@ s3 = boto3.resource(
     aws_secret_access_key=app.config['AWS_SECRET_ACCESS_KEY']
 )
 
-Session(app)
+session = Session(app)
 
 # Ensure responses aren't cached
 
