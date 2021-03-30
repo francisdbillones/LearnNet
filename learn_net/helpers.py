@@ -92,6 +92,8 @@ def allowed_file(filename):
 def sslify(route):
     @functools.wraps(route)
     def wrapper_sslify(*args, **kwargs):
+        if os.environ.get('DEV'):
+            return route(*args, **kwargs)
         protocol, url = request.url.split('://')
         if protocol == 'http':
             return redirect(f'https://{url}')

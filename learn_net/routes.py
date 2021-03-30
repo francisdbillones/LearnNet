@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 
 from learn_net import app, bcrypt, db, s3, session
 from learn_net.helpers import (rename_kit_file, save_kit_file,
-                               save_profile_picture)
+                               save_profile_picture, sslify)
 from learn_net.models import Kit, KitFile, KitTag, User
 
 from learn_net.forms import SignInForm, SignUpForm, UpdateAccountForm, \
@@ -14,6 +14,7 @@ from learn_net.forms import SignInForm, SignUpForm, UpdateAccountForm, \
 
 
 @app.route('/')
+@sslify
 def index():
     return render_template('index.html')
 
