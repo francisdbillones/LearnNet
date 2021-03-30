@@ -4,7 +4,7 @@ from flask_login import current_user, login_required, login_user, logout_user
 from sqlalchemy.sql.expression import desc
 from werkzeug.utils import secure_filename
 
-from learn_net import app, bcrypt, db, s3, session
+from learn_net import app, bcrypt, db, s3
 from learn_net.helpers import (rename_kit_file, save_kit_file,
                                save_profile_picture)
 from learn_net.models import Kit, KitFile, KitTag, User
@@ -180,12 +180,6 @@ def browse():
 
         result_kits = result_kits.paginate(
             page=page, per_page=10, error_out=False)
-
-        if not result_kits.has_prev and not result_kits.has_next:
-            flash('That page does not exist', 'danger')
-            if request.referrer:
-                return redirect(request.referrer)
-            return redirect(url_for('index'))
 
         return render_template('browse.html', extendedSearchForm=extendedSearchForm, result_kits=result_kits, show_bad_search_image=show_bad_search_image)
 

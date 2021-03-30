@@ -84,3 +84,6 @@ def inject_bad_search_image_url():
     })
 
     return dict(bad_search_image_url=url)
+
+
+from learn_net import routes
