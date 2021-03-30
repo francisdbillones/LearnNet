@@ -434,7 +434,3 @@ def getusername():
     user = User.query.filter_by(email=email).first()
     result = user.username if user else None
     return jsonify({"username": result})
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
