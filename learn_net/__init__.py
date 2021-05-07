@@ -14,6 +14,10 @@ app.config['SECRET_KEY'] = secrets.token_hex(256)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+if app.config['SQLALCHEMY_DATABASE_URI'] is None:
+    raise ValueError(
+        'SQLALCHEMY_DATABASE_URI environment variable is not set.')
+
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 loginManager = LoginManager(app)
@@ -45,6 +49,15 @@ app.config['PDF_JS_PATH'] = '/'.join(['pdf.js', 'web', 'viewer.html'])
 app.config['AWS_S3_BUCKET_NAME'] = os.environ.get('AWS_S3_BUCKET_NAME')
 app.config['AWS_ACCESS_KEY'] = os.environ.get('AWS_ACCESS_KEY')
 app.config['AWS_SECRET_ACCESS_KEY'] = os.environ.get('AWS_SECRET_ACCESS_KEY')
+
+if app.config['AWS_S3_BUCKET_NAME'] is None:
+    raise ValueError('AWS_S3_BUCKET_NAME environment variable is not set.')
+
+if app.config['AWS_ACCESS_KEY'] is None:
+    raise ValueError('AWS_ACCESS_KEY environment variable is not set.')
+
+if app.config['AWS_SECRET_ACCESS_KEY'] is None:
+    raise ValueError('AWS_SECRET_ACCESS_KEY environment variable is not set.')
 
 s3 = boto3.resource(
     's3',
@@ -84,6 +97,5 @@ def inject_bad_search_image_url():
     })
 
     return dict(bad_search_image_url=url)
-
 
 from learn_net import routes

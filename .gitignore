@@ -1,6 +1,8 @@
 # environment config
 .envrc
 
+include/
+
 # visual studio code
 .vscode
 .vs
