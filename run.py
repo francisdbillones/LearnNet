@@ -1,5 +1,12 @@
 from learn_net import app
 
-# if file is run through 'python run.py', run in debug mode
+# if DEV environment variable is set, run in debug mode
 if __name__ == '__main__':
-    app.run(debug=True)
+    import os
+
+    dev = os.environ.get('DEV')
+
+    if dev:
+        app.run(debug=True)
+    else:
+        app.run()
