@@ -10,6 +10,8 @@ import os
 import functools
 import io
 
+MAX_PFP_SIZE = (125, 125)
+
 
 def save_profile_picture(picture_file):
     if current_user.pfp_file == 'default.jpg':
@@ -24,7 +26,7 @@ def save_profile_picture(picture_file):
         object_key = '/'.join(['images', 'profile_pictures',
                                current_user.pfp_file])
 
-    resized_image = Image.open(picture_file).resize((125, 125))
+    resized_image = Image.open(picture_file).resize(MAX_PFP_SIZE)
 
     with io.BytesIO() as final_picture:
         extension = os.path.splitext(picture_file.filename)[1][1::]
