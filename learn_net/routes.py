@@ -1,3 +1,4 @@
+from operator import add
 from flask import (flash, jsonify, redirect, render_template, request,
                    url_for)
 from flask_login import current_user, login_required, login_user, logout_user
@@ -6,11 +7,13 @@ from werkzeug.utils import secure_filename
 
 from learn_net import app, bcrypt, db, s3, session
 from learn_net.helpers import (rename_kit_file, save_kit_file,
-                               save_profile_picture, sslify)
-from learn_net.models import Kit, KitFile, KitTag, User
+                               save_profile_picture, sslify,
+                               generate_youtube_embed_url, get_video_id)
+from learn_net.models import Kit, KitFile, KitTag, User, YoutubeVideoId
 
-from learn_net.forms import SignInForm, SignUpForm, UpdateAccountForm, \
-    CreateKitForm, EditKitForm, UploadKitFilesForm, ExtendedSearchForm
+from learn_net.forms import (SignInForm, SignUpForm, UpdateAccountForm,
+                             CreateKitForm, EditKitForm, UploadKitFilesForm,
+                             ExtendedSearchForm, AddYoutubeVideoForm)
 
 
 @app.route('/')
@@ -258,6 +261,8 @@ def view_kit(kitID):
 
     uploadKitFilesForm = UploadKitFilesForm()
 
+    addYoutubeVideoForm = AddYoutubeVideoForm()
+
     if uploadKitFilesForm.validate_on_submit():
         # check that the files the user uploaded
         # doesn't exceed maximum number of files allowed
@@ -268,24 +273,46 @@ def view_kit(kitID):
 
         for f in uploadKitFilesForm.files.data:
             filename = secure_filename(f.filename)
-            if filename in [file.filename for file in kit.files]:
+            if any(filename == file.filename for file in kit.files):
                 flash(
                     'That file already exists in this kit. If it doesn\'t, check the filename.', 'danger')
                 return redirect(url_for('view_kit', kitID=kitID))
 
             file = KitFile(filename=save_kit_file(kit.id, f), kit_id=kit.id)
             db.session.add(file)
+
         db.session.commit()
 
         flash('Your changes have been saved.', 'success')
 
+    if addYoutubeVideoForm.validate_on_submit():
+        video_url = addYoutubeVideoForm.video_url.data
+
+        video_id = get_video_id(video_url)
+        video_id = YoutubeVideoId(kit_id=kit.id, video_id=video_id)
+
+        db.session.add(video_id)
+        db.session.commit()
+
+        flash('Video added.', 'success')
+
     for file in kit.files:
         file.key = '/'.join(['user_kits', str(kit.id), file.filename])
+
+    EMBED_RESOLUTION = (720, 480)
+    embed_urls = (
+        generate_youtube_embed_url(video_id.video_id)
+        for video_id in kit.youtube_video_ids
+    )
 
     return render_template('view_kit.html',
                            kit=kit,
                            uploadKitFilesForm=uploadKitFilesForm,
-                           files=kit.files)
+                           addYoutubeVideoForm=addYoutubeVideoForm,
+                           files=kit.files,
+                           embed_urls=embed_urls,
+                           height=EMBED_RESOLUTION[0],
+                           width=EMBED_RESOLUTION[1])
 
 
 @app.route('/kits/<int:kitID>/edit', methods=['GET', 'POST'])

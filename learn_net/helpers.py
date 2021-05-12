@@ -9,6 +9,7 @@ import secrets
 import os
 import functools
 import io
+import urllib.parse as urllib_parse
 
 MAX_PFP_SIZE = (125, 125)
 
@@ -101,3 +102,24 @@ def sslify(route):
             return redirect(f'https://{url}')
         return route(*args, **kwargs)
     return wrapper_sslify
+
+
+def get_video_id(video_url):
+    args = dict(
+        urllib_parse.parse_qs(
+            urllib_parse.urlsplit(video_url).query
+        )
+    )
+
+    video_id = args.get('v', None)
+
+    if video_id is None:
+        raise ValueError('URL must include ?v= query parameter.')
+
+    return video_id[0]
+
+
+def generate_youtube_embed_url(video_id):
+    embed_url = f'https://www.youtube.com/embed/{video_id}'
+
+    return embed_url

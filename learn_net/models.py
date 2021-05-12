@@ -30,6 +30,8 @@ class Kit(db.Model):
     kit_description = db.Column(db.Text, unique=False, nullable=False)
     category = db.Column(db.String(20), unique=False, nullable=False)
     files = db.relationship('KitFile', backref='kit', lazy=True)
+    youtube_video_ids = db.relationship(
+        'YoutubeVideoId', backref='kit', lazy=True)
     tags = db.relationship('KitTag', backref='kit_tagged', lazy=True)
 
     def __repr__(self):
@@ -48,3 +50,9 @@ class KitFile(db.Model):
     date_uploaded = db.Column(
         db.DateTime, unique=False, nullable=False, default=datetime.now())
     kit_id = db.Column(db.Integer, db.ForeignKey('kit.id'), nullable=False)
+
+
+class YoutubeVideoId(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    kit_id = db.Column(db.Integer, db.ForeignKey('kit.id'), nullable=False)
+    video_id = db.Column(db.String(20), unique=False, nullable=False)
