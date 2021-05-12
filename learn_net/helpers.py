@@ -1,6 +1,5 @@
-from learn_net import s3
+from learn_net import app, s3
 from werkzeug.utils import secure_filename
-from learn_net import app
 from PIL import Image
 from flask_login import current_user
 from flask import request, redirect
