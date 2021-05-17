@@ -75,7 +75,6 @@ def signin():
 def signout():
     # sign out user
 
-    session.clear()
     logout_user()
     flash('You are logged out.', 'danger')
 
