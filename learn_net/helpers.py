@@ -8,6 +8,9 @@ import secrets
 import os
 import functools
 import io
+import urllib.parse as urllib_parse
+
+MAX_PFP_SIZE = (125, 125)
 
 
 def save_profile_picture(picture_file):
@@ -23,7 +26,7 @@ def save_profile_picture(picture_file):
         object_key = '/'.join(['images', 'profile_pictures',
                                current_user.pfp_file])
 
-    resized_image = Image.open(picture_file).resize((125, 125))
+    resized_image = Image.open(picture_file).resize(MAX_PFP_SIZE)
 
     with io.BytesIO() as final_picture:
         extension = os.path.splitext(picture_file.filename)[1][1::]
@@ -98,3 +101,24 @@ def sslify(route):
             return redirect(f'https://{url}')
         return route(*args, **kwargs)
     return wrapper_sslify
+
+
+def get_video_id(video_url):
+    args = dict(
+        urllib_parse.parse_qs(
+            urllib_parse.urlsplit(video_url).query
+        )
+    )
+
+    video_id = args.get('v', None)
+
+    if video_id is None:
+        raise ValueError('URL must include ?v= query parameter.')
+
+    return video_id[0]
+
+
+def generate_youtube_embed_url(video_id):
+    embed_url = f'https://www.youtube.com/embed/{video_id}'
+
+    return embed_url

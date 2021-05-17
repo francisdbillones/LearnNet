@@ -42,9 +42,6 @@ app.config['ALLOWED_EXTENSIONS'] = [
     'pdf'
 ]
 
-# set path for pdf.js viewer
-app.config['PDF_JS_PATH'] = '/'.join(['pdf.js', 'web', 'viewer.html'])
-
 # aws S3 setup
 app.config['AWS_S3_BUCKET_NAME'] = os.environ.get('AWS_S3_BUCKET_NAME')
 app.config['AWS_ACCESS_KEY'] = os.environ.get('AWS_ACCESS_KEY')
