@@ -11,7 +11,13 @@ import boto3
 # Configure application
 app = Flask(__name__)
 app.config['SECRET_KEY'] = secrets.token_hex(256)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+
+if os.environ.get('CHANGE_DATABASE_URI'):
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+        'DATABASE_URL').replace('://', 'ql://')
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 if app.config['SQLALCHEMY_DATABASE_URI'] is None:
